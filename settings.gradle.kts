@@ -3,11 +3,11 @@ pluginManagement {
     val kotlinVersion: String by settings
     val kspVersion: String by settings
     plugins {
-        kotlin("jvm") version kotlinVersion
-        kotlin("js") version kotlinVersion
-        kotlin("multiplatform") version kotlinVersion
-        kotlin("plugin.serialization") version kotlinVersion
-        id("com.google.devtools.ksp") version kspVersion
+        kotlin("jvm") version kotlinVersion apply false
+        kotlin("js") version kotlinVersion apply false
+        kotlin("multiplatform") version kotlinVersion apply false
+        kotlin("plugin.serialization") version kotlinVersion apply false
+        id("com.google.devtools.ksp") version kspVersion apply false
     }
     repositories {
         gradlePluginPortal()
@@ -15,8 +15,16 @@ pluginManagement {
     }
  }
 
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 rootProject.name = "ElemApp"
 
+include(":annotations")
 include(":model")
 include(":client")
 include(":server")

@@ -2,9 +2,6 @@ plugins {
     kotlin("js")
     kotlin("plugin.serialization")
 }
-repositories{
-    mavenCentral()
-}
 
 val serializationVersion: String by project
 val kotlinWrappersVersion = "1.0.0-pre.338"
@@ -25,6 +22,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
     implementation(npm("cross-fetch", crossFetchVersion))
 }
+
 kotlin {
     js(LEGACY) {
         binaries.executable()

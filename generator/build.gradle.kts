@@ -4,11 +4,10 @@ plugins {
 
 val kspVersion: String by project
 
-repositories {
-    mavenCentral()
+kotlin {
+    dependencies {
+        implementation(project(":annotations"))
+        implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
+    }
 }
 
-dependencies {
-    implementation(project(":model"))
-    implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
-}
