@@ -3,7 +3,7 @@ pluginManagement {
     val kotlinVersion: String by settings
     val kspVersion: String by settings
     plugins {
-        kotlin("jvm") version kotlinVersion apply false
+        kotlin("jvm") version kotlinVersion
         kotlin("js") version kotlinVersion apply false
         kotlin("multiplatform") version kotlinVersion apply false
         kotlin("plugin.serialization") version kotlinVersion apply false

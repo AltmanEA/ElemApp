@@ -1,8 +1,7 @@
-package ru.altmanea.elem
+package ru.altmanea.elem.generator
 
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import ru.altmanea.elem.ElemProcessor
 
 class ElemProcessorProvider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment) =
