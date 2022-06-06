@@ -11,8 +11,8 @@ import kotlin.io.path.Path
 
 internal class ElemProcessorProviderTest: StringSpec({
     val projectPath = Path(File("").absolutePath).parent.toString()
-    val modelPath = "$projectPath\\model\\src\\main\\kotlin\\ru\\altmanea\\elem\\model\\"
-    val annotationPath = "$projectPath\\annotations\\src\\main\\kotlin\\ru\\altmanea\\elem\\annotations\\"
+    val modelPath = "$projectPath\\model\\src\\jvmMain\\kotlin\\ru\\altmanea\\elem\\model\\"
+    val annotationPath = "$projectPath\\generator\\src\\jvmMain\\kotlin\\ru\\altmanea\\elem\\generator\\"
 
     "Experimental test" {
         val compilation = KotlinCompilation().apply {
