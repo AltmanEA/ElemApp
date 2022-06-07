@@ -18,7 +18,6 @@ kotlin {
                 mavenCentral()
             }
             dependencies {
-//                implementation(files("/../annotations/build/libs/annotations-jvm-0.1.jar"))
                 implementation(files("/../generator/build/libs/generator-jvm-0.1.jar"))
                 implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
                 implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")

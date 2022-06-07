@@ -22,7 +22,6 @@ kotlin {
             dependencies {
                 implementation(files("/../annotations/build/libs/annotations-jvm-0.1.jar"))
                 implementation("com.google.devtools.ksp:symbol-processing-api:1.6.21-1.0.5")
-                implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
                 implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
             }
         }

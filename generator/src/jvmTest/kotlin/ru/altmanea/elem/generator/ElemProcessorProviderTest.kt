@@ -9,6 +9,31 @@ import io.kotest.matchers.shouldNotBe
 import java.io.File
 import kotlin.io.path.Path
 
+
+// https://github.com/tschuchortdev/kotlin-compile-testing/issues/129
+internal val KotlinCompilation.Result.workingDir: File get() =
+    outputDirectory.parentFile!!
+
+internal fun File.listFilesRecursively(): List<File> {
+    return listFiles()?.flatMap { file ->
+        if (file.isDirectory) {
+            file.listFilesRecursively()
+        } else {
+            listOf(file)
+        }
+    } ?: emptyList()
+}
+
+val KotlinCompilation.Result.kspGeneratedSources: List<File> get() {
+    val kspWorkingDir = workingDir.resolve("ksp")
+    val kspGeneratedDir = kspWorkingDir.resolve("sources")
+    val kotlinGeneratedDir = kspGeneratedDir.resolve("kotlin")
+    val javaGeneratedDir = kspGeneratedDir.resolve("java")
+    return kotlinGeneratedDir.listFilesRecursively() +
+            javaGeneratedDir.listFilesRecursively()
+}
+
+// end https://github.com/tschuchortdev/kotlin-compile-testing/issues/129
 internal class ElemProcessorProviderTest: StringSpec({
     val projectPath = Path(File("").absolutePath).parent.toString()
     val modelPath = "$projectPath\\model\\src\\jvmMain\\kotlin\\ru\\altmanea\\elem\\model\\"
@@ -25,7 +50,10 @@ internal class ElemProcessorProviderTest: StringSpec({
             symbolProcessorProviders = listOf(ElemProcessorProvider())
         }
         val result = compilation.compile()
-        result shouldNotBe null
+        result.kspGeneratedSources.forEach {
+            it.inputStream().bufferedReader().lineSequence().toList()
+                .map { println(it) }
+        }
     }
 })
 

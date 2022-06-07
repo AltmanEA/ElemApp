@@ -2,6 +2,7 @@ package ru.altmanea.elem.generator
 
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -13,29 +14,36 @@ class ElemProcessor(
 ) : SymbolProcessor {
     override fun process(resolver: Resolver): List<KSAnnotated> {
         logger.info("--- KSP process start ---")
-        val symbols: Sequence<KSAnnotated> = resolver
+        resolver
             .getSymbolsWithAnnotation("ru.altmanea.elem.generator.Elem")
-        if (!symbols.iterator().hasNext())
-            return emptyList()
+            .forEach {
+                logger.info("make $it")
+                elemProcess(it as KSClassDeclaration, codeGenerator)
+            }
 
-        val className = symbols.first().toString()
+        return emptyList()
+    }
+
+    private fun elemProcess(elem: KSClassDeclaration, codeGenerator: CodeGenerator){
+        val elemName = elem.toString() + "DTO"
+        val elemPackage = elem.qualifiedName?.getQualifier()?:""
         val fileSpec =
-            FileSpec.builder("", "")
+            FileSpec.builder(elemPackage, "")
                 .addType(
-                    TypeSpec.classBuilder(className)
+                    TypeSpec.classBuilder(elemName)
                         .primaryConstructor(
                             FunSpec.constructorBuilder()
+                                .addParameter("name", String::class)
                                 .build()
                         )
                         .build()
                 )
                 .build()
 
-
         codeGenerator.createNewFile(
             dependencies = Dependencies(false),
-            packageName = "ru.altmanea.elem",
-            fileName = "TestGen"
+            packageName = elemPackage,
+            fileName = elemName
         ).use { outputStream ->
             outputStream.writer()
                 .use { writer ->
@@ -43,6 +51,5 @@ class ElemProcessor(
                 }
         }
 
-        return emptyList()
     }
 }
