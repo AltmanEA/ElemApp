@@ -1,4 +1,4 @@
-group = "ru.altmanea.elem.model"
+group = "ru.altmanea.elem.elems"
 version = "0.1"
 
 plugins {

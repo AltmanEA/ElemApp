@@ -5,9 +5,4 @@ gradle
 gradlew.bat
 gradlew
 ElemApp.iml
-server/build
-model/build
-client/build
-generator/build
-kotlin-js-store
 
