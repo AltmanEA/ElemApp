@@ -36,8 +36,8 @@ val KotlinCompilation.Result.kspGeneratedSources: List<File> get() {
 // end https://github.com/tschuchortdev/kotlin-compile-testing/issues/129
 internal class ElemProcessorProviderTest: StringSpec({
     val projectPath = Path(File("").absolutePath).parent.toString()
-    val modelPath = "$projectPath\\model\\src\\jvmMain\\kotlin\\ru\\altmanea\\elem\\model\\"
-    val annotationPath = "$projectPath\\generator\\src\\jvmMain\\kotlin\\ru\\altmanea\\elem\\generator\\"
+    val modelPath = "$projectPath\\model\\src\\commonMain\\kotlin\\ru\\altmanea\\elem\\model\\"
+    val annotationPath = "$projectPath\\core\\src\\commonMain\\kotlin\\ru\\altmanea\\elem\\core\\"
 
     "Experimental test" {
         val compilation = KotlinCompilation().apply {

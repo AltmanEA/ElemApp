@@ -6,6 +6,8 @@ import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toTypeName
 
 class ElemProcessor(
     private val options: Map<String, String>,
@@ -15,7 +17,7 @@ class ElemProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         logger.info("--- KSP process start ---")
         resolver
-            .getSymbolsWithAnnotation("ru.altmanea.elem.generator.Elem")
+            .getSymbolsWithAnnotation("ru.altmanea.elem.core.Elem")
             .forEach {
                 logger.info("make $it")
                 elemProcess(it as KSClassDeclaration, codeGenerator)
@@ -24,9 +26,11 @@ class ElemProcessor(
         return emptyList()
     }
 
+    @OptIn(KotlinPoetKspPreview::class)
     private fun elemProcess(elem: KSClassDeclaration, codeGenerator: CodeGenerator){
         val elemName = elem.toString() + "DTO"
         val elemPackage = elem.qualifiedName?.getQualifier()?:""
+        val elemProps = elem.getAllProperties().first()
         val fileSpec =
             FileSpec.builder(elemPackage, "")
                 .addType(
@@ -34,6 +38,7 @@ class ElemProcessor(
                         .primaryConstructor(
                             FunSpec.constructorBuilder()
                                 .addParameter("name", String::class)
+                                .addParameter(elemProps.toString(), elemProps.type.toTypeName() )
                                 .build()
                         )
                         .build()

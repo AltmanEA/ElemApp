@@ -4,6 +4,7 @@ version = "0.1"
 plugins {
     kotlin("multiplatform") version "1.6.21"
     id("com.google.devtools.ksp") version "1.6.21-1.0.5"
+    id("maven-publish")
 }
 
 val kotlinPoetVersion = "1.11.0"
@@ -20,7 +21,7 @@ kotlin {
                 mavenCentral()
             }
             dependencies {
-                implementation(files("/../annotations/build/libs/annotations-jvm-0.1.jar"))
+                implementation(files("/../core/build/libs/core-jvm-0.1.jar"))
                 implementation("com.google.devtools.ksp:symbol-processing-api:1.6.21-1.0.5")
                 implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
             }
