@@ -1,39 +1,29 @@
-group = "ru.altmanea.elem.generator"
+group = "ru.altmanea.elem"
 version = "0.1"
 
 plugins {
-    kotlin("multiplatform") version "1.6.21"
-    id("com.google.devtools.ksp") version "1.6.21-1.0.5"
-    id("maven-publish")
+    kotlin("jvm") version "1.7.0"
+    id("java-gradle-plugin")
+    `maven-publish`
 }
 
-val kotlinPoetVersion = "1.11.0"
-val kotestVersion = "5.3.0"
-val compileTestingVersion = "1.4.8"
-
-kotlin {
-    jvm {
-        withJava()
-    }
-    sourceSets {
-        val jvmMain by getting {
-            repositories {
-                mavenCentral()
-            }
-            dependencies {
-                implementation(files("/../core/build/libs/core-jvm-0.1.jar"))
-                implementation("com.google.devtools.ksp:symbol-processing-api:1.6.21-1.0.5")
-                implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
-                implementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
-                implementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:$compileTestingVersion")
-            }
-        }
-    }
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
 
+dependencies {
+    implementation("com.squareup:kotlinpoet:1.11.0")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
+    implementation("ru.altmanea.elem.core:core:0.1")
+}
+
+gradlePlugin {
+    plugins {
+        create("generator") {
+            id = "ru.altmanea.elem.generator"
+            implementationClass = "ru.altmanea.elem.generator.GenPlugin"
+        }
+    }
+}
