@@ -1,19 +1,18 @@
 package ru.altmanea.elem.generator
 
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import ru.altmanea.elem.core.ElemDescription
+import ru.altmanea.elem.core.config.Config
 import java.io.File
 
 open class GenTask : DefaultTask() {
 
     @get:Input
-    lateinit var elemDescription: ElemDescription
+    lateinit var config: String
 
     @get:Input
     lateinit var packageName: String
@@ -23,16 +22,10 @@ open class GenTask : DefaultTask() {
 
     @TaskAction
     fun invoke() {
-        val className = elemDescription.name
-        val elemClass =
-            TypeSpec
-                .classBuilder(className)
-                .build()
-        val elemFile =
-            FileSpec
-                .builder(packageName, className)
-                .addType(elemClass)
-                .build()
-        elemFile.writeTo(outputDir)
+        val config = Json.decodeFromString<Config>(config)
+        val generators = Generators(packageName, outputDir)
+        config.elems.forEach {
+            generators.elems(it)
+        }
     }
 }

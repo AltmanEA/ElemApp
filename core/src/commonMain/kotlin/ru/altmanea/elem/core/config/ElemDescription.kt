@@ -1,9 +1,9 @@
-package ru.altmanea.elem.core
+package ru.altmanea.elem.core.config
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-open class ElemDescription(
+class ElemDescription(
     val name: String,
     val props: List<PropsType> = emptyList(),
     val tables: List<RowDescription> = emptyList()

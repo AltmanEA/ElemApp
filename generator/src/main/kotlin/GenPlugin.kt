@@ -22,7 +22,7 @@ class GenPlugin : Plugin<Project> {
             it.description = "Generate elem classes and others"
 
             it.packageName = extension.packageName
-            it.elemDescription = extension.elemDescription
+            it.config = extension.config
             it.outputDir = extension.outputDir.asFile
         }
     }

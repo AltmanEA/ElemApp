@@ -1,4 +1,4 @@
-package ru.altmanea.elem.core
+package ru.altmanea.elem.core.config
 
 import kotlinx.serialization.Serializable
 
