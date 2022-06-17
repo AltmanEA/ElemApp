@@ -28,17 +28,14 @@ tasks.check {
 }
 
 dependencies {
-    implementation("com.squareup:kotlinpoet:1.11.0")
+    implementation("com.squareup:kotlinpoet:1.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
-    implementation("ru.altmanea.elem.core:core:0.1")
-    testImplementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
-    testImplementation("io.kotest:kotest-runner-junit5:5.3.1")
-    testImplementation("io.kotest:kotest-assertions-core:5.3.1")
+    implementation("ru.altmanea.elem:generator:0.1")
     "functionalTestImplementation"(project)
     "functionalTestImplementation"("io.kotest:kotest-runner-junit5:5.3.1")
     "functionalTestImplementation"("io.kotest:kotest-assertions-core:5.3.1")
-    "functionalTestImplementation"("ru.altmanea.elem.core:core:0.1")
+    "functionalTestImplementation"("ru.altmanea.elem:generator:0.1")
 }
 
 gradlePlugin {

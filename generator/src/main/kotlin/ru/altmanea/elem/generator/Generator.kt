@@ -2,9 +2,9 @@ package ru.altmanea.elem.generator
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
-import ru.altmanea.elem.core.config.ElemDescription
+import ru.altmanea.elem.generator.config.ElemDescription
 
-class Generators(
+class Generator(
     private val packageName: String,
 ) {
     fun elems(description: ElemDescription): FileSpec {

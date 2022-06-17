@@ -1,11 +1,11 @@
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
-import ru.altmanea.elem.core.config.ElemDescription
-import ru.altmanea.elem.generator.Generators
+import ru.altmanea.elem.generator.Generator
+import ru.altmanea.elem.generator.config.ElemDescription
 
 class GeneratorsTest : StringSpec({
     "elems" {
-        val generator = Generators("ru.test")
+        val generator = Generator("ru.test")
         val fileSpec = generator.elems(
             ElemDescription("TestElem")
         )

@@ -6,7 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import ru.altmanea.elem.core.config.ElemAppConfig
+import ru.altmanea.elem.generator.config.ElemAppConfig
 import java.io.File
 
 open class GenTask : DefaultTask() {
@@ -23,7 +23,7 @@ open class GenTask : DefaultTask() {
     @TaskAction
     fun invoke() {
         val config = Json.decodeFromString<ElemAppConfig>(config)
-        val generators = Generators(packageName)
+        val generators = Generator(packageName)
         config.elems.forEach {
             val fileSpec = generators.elems(it)
             fileSpec.writeTo(outputDir)
