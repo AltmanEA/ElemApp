@@ -5,4 +5,9 @@ gradle
 gradlew.bat
 gradlew
 ElemApp.iml
-
+generator.iml
+elems.iml
+core.iml
+generator/test
+elems/src-gen
+core/kotlin-js-store
