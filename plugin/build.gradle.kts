@@ -15,6 +15,7 @@ repositories {
 
 // Kotest require Gradle 7.5 (embedded kotlin)
 val functionalTest: SourceSet by sourceSets.creating
+
 val functionalTestTask = tasks.register<Test>("functionalTest") {
     description = "Runs the functional tests."
     group = "verification"
@@ -23,7 +24,7 @@ val functionalTestTask = tasks.register<Test>("functionalTest") {
     mustRunAfter(tasks.test)
 }
 tasks.check {
-    dependsOn(functionalTest)
+    dependsOn(functionalTestTask)
 }
 
 dependencies {
