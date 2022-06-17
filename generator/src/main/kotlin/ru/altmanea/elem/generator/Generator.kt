@@ -7,8 +7,44 @@ import ru.altmanea.elem.generator.config.ElemDescription
 class Generator(
     private val packageName: String,
 ) {
-    fun elems(description: ElemDescription): FileSpec {
-        val className = description.name
+    fun serverFiles(description: ElemDescription) =
+        listOf(
+            elemDto(description),
+            elemRepo(description)
+        )
+
+    fun clientFiles(description: ElemDescription) =
+        listOf(
+            elemDto(description),
+            elemComp(description)
+        )
+
+    private fun elemComp(description: ElemDescription): FileSpec {
+        val className = "fc"+description.name
+        val elemClass =
+            TypeSpec
+                .classBuilder(className)
+                .build()
+        return FileSpec
+            .builder(packageName, className)
+            .addType(elemClass)
+            .build()
+    }
+
+    private fun elemDto(description: ElemDescription): FileSpec {
+        val className = description.name + "DTO"
+        val elemClass =
+            TypeSpec
+                .classBuilder(className)
+                .build()
+        return FileSpec
+            .builder(packageName, className)
+            .addType(elemClass)
+            .build()
+    }
+
+    private fun elemRepo(description: ElemDescription): FileSpec {
+        val className = description.name + "Repo"
         val elemClass =
             TypeSpec
                 .classBuilder(className)

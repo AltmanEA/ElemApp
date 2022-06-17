@@ -24,9 +24,19 @@ open class GenTask : DefaultTask() {
     fun invoke() {
         val config = Json.decodeFromString<ElemAppConfig>(config)
         val generators = Generator(packageName)
+        val jvmDir = File(outputDir.path+"/jvmMain/")
+        val jsDir = File(outputDir.path+"/jsMain/")
         config.elems.forEach {
-            val fileSpec = generators.elems(it)
-            fileSpec.writeTo(outputDir)
+            generators
+                .serverFiles(it)
+                .forEach {
+                    it.writeTo(jvmDir)
+                }
+            generators
+                .clientFiles(it)
+                .forEach {
+                    it.writeTo(jsDir)
+                }
         }
     }
 }
