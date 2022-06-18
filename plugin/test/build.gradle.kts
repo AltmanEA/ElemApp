@@ -27,10 +27,6 @@ kotlin {
             dependencies {
                 implementation("ru.altmanea.elem:generator:0.1")
             }
-            kotlin.setSrcDirs(kotlin.srcDirs + File("src-gen/jvmMain"))
-        }
-        val jsMain by getting {
-            kotlin.setSrcDirs(kotlin.srcDirs + File("src-gen/jsMain"))
         }
     }
 }
@@ -41,6 +37,7 @@ the<GenPluginExtension>().config =
             "ConfigName",
             listOf(
                 ElemDescription("Elem1"),
+                ElemDescription("Elem2"),
             )
         )
     )

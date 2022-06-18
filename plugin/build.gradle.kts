@@ -40,9 +40,9 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("generator") {
-            id = "ru.altmanea.elem.generator"
-            implementationClass = "ru.altmanea.elem.generator.GenPlugin"
+        create("elemGenPlugin") {
+            id = "ru.altmanea.elem.plugin"
+            implementationClass = "ru.altmanea.elem.plugin.GenPlugin"
         }
     }
     testSourceSets(functionalTest)

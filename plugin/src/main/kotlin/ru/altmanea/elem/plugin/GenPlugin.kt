@@ -1,4 +1,4 @@
-package ru.altmanea.elem.generator
+package ru.altmanea.elem.plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

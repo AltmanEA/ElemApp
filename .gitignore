@@ -8,6 +8,6 @@ ElemApp.iml
 plugin.iml
 elems.iml
 core.iml
-plugin/test
-elems/src-gen
-core/kotlin-js-store
+test
+src-gen
+kotlin-js-store
