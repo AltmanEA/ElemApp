@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 class ElemDescription(
     val name: String,
-    val props: List<PropsType> = emptyList(),
+    val props: Map<String,PropsType> = emptyMap(),
     val tables: List<RowDescription> = emptyList()
 )

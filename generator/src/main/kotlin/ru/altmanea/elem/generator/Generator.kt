@@ -3,9 +3,10 @@ package ru.altmanea.elem.generator
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import ru.altmanea.elem.generator.config.ElemDescription
+import ru.altmanea.elem.generator.generators.elemDto
 
 class Generator(
-    private val packageName: String,
+    val packageName: String,
 ) {
     fun serverFiles(description: ElemDescription) =
         listOf(
@@ -20,7 +21,7 @@ class Generator(
         )
 
     private fun elemComp(description: ElemDescription): FileSpec {
-        val className = "fc"+description.name
+        val className = "fc" + description.name
         val elemClass =
             TypeSpec
                 .classBuilder(className)
@@ -31,17 +32,6 @@ class Generator(
             .build()
     }
 
-    private fun elemDto(description: ElemDescription): FileSpec {
-        val className = description.name + "DTO"
-        val elemClass =
-            TypeSpec
-                .classBuilder(className)
-                .build()
-        return FileSpec
-            .builder(packageName, className)
-            .addType(elemClass)
-            .build()
-    }
 
     private fun elemRepo(description: ElemDescription): FileSpec {
         val className = description.name + "Repo"

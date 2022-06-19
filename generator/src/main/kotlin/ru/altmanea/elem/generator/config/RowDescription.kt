@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 class RowDescription(
     val name: String,
-    val props: List<PropsType> = emptyList()
+    val props: Map<String,PropsType> = emptyMap()
 )
