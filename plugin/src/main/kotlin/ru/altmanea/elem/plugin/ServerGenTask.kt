@@ -10,7 +10,7 @@ import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import java.io.File
 
-open class GenTask : DefaultTask() {
+open class ServerGenTask : DefaultTask() {
 
     @get:Input
     lateinit var config: String
@@ -25,18 +25,11 @@ open class GenTask : DefaultTask() {
     fun invoke() {
         val config = Json.decodeFromString<ElemAppConfig>(config)
         val generators = Generator(packageName)
-        val jvmDir = File(outputDir.path+"/jvmMain/")
-        val jsDir = File(outputDir.path+"/jsMain/")
         config.elems.forEach {
             generators
                 .serverFiles(it)
                 .forEach {
-                    it.writeTo(jvmDir)
-                }
-            generators
-                .clientFiles(it)
-                .forEach {
-                    it.writeTo(jsDir)
+                    it.writeTo(outputDir)
                 }
         }
     }

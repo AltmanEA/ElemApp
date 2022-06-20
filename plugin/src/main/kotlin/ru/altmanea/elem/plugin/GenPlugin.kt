@@ -15,11 +15,23 @@ class GenPlugin : Plugin<Project> {
         )
 
         project.tasks.register(
-            "generation",
-            GenTask::class.java
+            "generateServerFiles",
+            ServerGenTask::class.java
         ) {
             it.group = "Code generation"
-            it.description = "Generate elem classes and others"
+            it.description = "Generate server elem classes and others"
+
+            it.packageName = extension.packageName
+            it.config = extension.config
+            it.outputDir = extension.outputDir.asFile
+        }
+
+        project.tasks.register(
+            "generateClientFiles",
+            ClientGenTask::class.java
+        ) {
+            it.group = "Code generation"
+            it.description = "Generate client elem classes and others"
 
             it.packageName = extension.packageName
             it.config = extension.config

@@ -6,8 +6,10 @@ gradlew.bat
 gradlew
 ElemApp.iml
 plugin.iml
-elems.iml
+config.iml
 core.iml
+server.iml
+client.iml
 test
 src-gen
 kotlin-js-store

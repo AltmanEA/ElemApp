@@ -31,13 +31,3 @@ kotlin {
     }
 }
 
-the<GenPluginExtension>().config =
-    Json.encodeToString(
-        ElemAppConfig(
-            "ConfigName",
-            listOf(
-                ElemDescription("Elem1"),
-                ElemDescription("Elem2"),
-            )
-        )
-    )
