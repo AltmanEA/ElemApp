@@ -15,8 +15,8 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 kotlin {
@@ -42,26 +42,10 @@ kotlin {
     }
 }
 
+buildscript{
+    dependencies{
+        classpath("ru.altmanea.elem:config:0.1")
+    }
+}
 the<GenPluginExtension>().config =
-    Json.encodeToString(
-        ElemAppConfig(
-            "ConfigName",
-            listOf(
-                ElemDescription(
-                    "TestElem",
-                    mapOf(
-                        "name" to PropsType.STRING,
-                        "age" to PropsType.INT
-                    ),
-                    listOf(
-                        ru.altmanea.elem.generator.config.RowDescription(
-                            "firstTable",
-                            mapOf(
-                                "number" to PropsType.INT
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    )
+    Json.encodeToString(config)
