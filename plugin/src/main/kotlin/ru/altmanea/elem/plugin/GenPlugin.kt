@@ -21,7 +21,6 @@ class GenPlugin : Plugin<Project> {
             it.group = "Code generation"
             it.description = "Generate server elem classes and others"
 
-            it.packageName = extension.packageName
             it.config = extension.config
             it.outputDir = extension.outputDir.asFile
         }
@@ -33,7 +32,6 @@ class GenPlugin : Plugin<Project> {
             it.group = "Code generation"
             it.description = "Generate client elem classes and others"
 
-            it.packageName = extension.packageName
             it.config = extension.config
             it.outputDir = extension.outputDir.asFile
         }

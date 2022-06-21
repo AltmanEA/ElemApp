@@ -24,11 +24,11 @@ class GeneratorsTest : StringSpec({
 
     "elems" {
         val generator = Generator("ru.test")
-        val serverFileSpecs = generator.serverFiles(
+        val serverFileSpecs = generator.elemServerFiles(
             elemDescription
         )
         serverFileSpecs.size shouldBe 2
-        val clientFileSpecs = generator.serverFiles(
+        val clientFileSpecs = generator.elemServerFiles(
             elemDescription
         )
         clientFileSpecs.size shouldBe 2

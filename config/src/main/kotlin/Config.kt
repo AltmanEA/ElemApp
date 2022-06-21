@@ -5,6 +5,7 @@ import ru.altmanea.elem.generator.config.RowDescription
 
 val config = ElemAppConfig(
     "ConfigName",
+    "ru.altmanea.elem.test",
     listOf(
         ElemDescription(
             "TestElem",
