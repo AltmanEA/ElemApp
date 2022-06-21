@@ -14,7 +14,7 @@ class GeneratorsTest : StringSpec({
         ),
         listOf(
             RowDescription(
-                "first_table",
+                "firstTable",
                 mapOf(
                     "number" to PropsType.INT
                 )

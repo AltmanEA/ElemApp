@@ -1,4 +1,4 @@
-package ru.altmanea.elem.generator.utils
+package ru.altmanea.elem.generator.shared
 
 import java.util.*
 
