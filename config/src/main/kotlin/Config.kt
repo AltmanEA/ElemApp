@@ -1,11 +1,11 @@
-import ru.altmanea.elem.generator.config.ElemAppConfig
-import ru.altmanea.elem.generator.config.ElemDescription
-import ru.altmanea.elem.generator.config.PropsType
-import ru.altmanea.elem.generator.config.RowDescription
+import ru.altmanea.elem.generator.config.*
 
 val config = ElemAppConfig(
     "ConfigName",
     "ru.altmanea.elem.test",
+    ElemAppServerConfig(
+        "mongodb://root:vTnQMK3dxjFd@192.168.0.108:27017"
+    ),
     listOf(
         ElemDescription(
             "TestElem",

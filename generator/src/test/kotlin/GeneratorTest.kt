@@ -6,31 +6,12 @@ import ru.altmanea.elem.generator.config.PropsType
 import ru.altmanea.elem.generator.config.RowDescription
 
 class GeneratorsTest : StringSpec({
-    val elemDescription = ElemDescription(
-        "TestElem",
-        mapOf(
-            "name" to PropsType.STRING,
-            "age" to PropsType.INT
-        ),
-        listOf(
-            RowDescription(
-                "firstTable",
-                mapOf(
-                    "number" to PropsType.INT
-                )
-            )
-        )
-    )
 
     "elems" {
-        val generator = Generator("ru.test")
-        val serverFileSpecs = generator.elemServerFiles(
-            elemDescription
-        )
-        serverFileSpecs.size shouldBe 2
-        val clientFileSpecs = generator.elemServerFiles(
-            elemDescription
-        )
+        val generator = Generator(config)
+        val serverFileSpecs = generator.serverFiles()
+        serverFileSpecs.size shouldBe 3
+        val clientFileSpecs = generator.clientFiles()
         clientFileSpecs.size shouldBe 2
     }
 })

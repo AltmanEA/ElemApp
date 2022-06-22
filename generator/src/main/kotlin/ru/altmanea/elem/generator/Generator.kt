@@ -5,7 +5,8 @@ import com.squareup.kotlinpoet.TypeSpec
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.generators.elemDto
-import ru.altmanea.elem.generator.generators.elemRepo
+import ru.altmanea.elem.generator.generators.elemMongo
+import ru.altmanea.elem.generator.generators.serverMain
 
 class Generator(
     val config: ElemAppConfig
@@ -18,13 +19,14 @@ class Generator(
         config.elems.forEach {
             result.addAll(elemServerFiles(it))
         }
+        result.add(serverMain())
         return result
     }
 
     fun elemServerFiles(description: ElemDescription) =
         listOf(
             elemDto(description),
-            elemRepo(description)
+            elemMongo(description)
         )
 
     fun clientFiles(): List<FileSpec> {

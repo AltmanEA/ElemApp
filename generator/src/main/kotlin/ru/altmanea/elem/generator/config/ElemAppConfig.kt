@@ -6,5 +6,11 @@ import kotlinx.serialization.Serializable
 class ElemAppConfig(
     val name: String,
     val packageName: String,
+    val serverConfig: ElemAppServerConfig,
     val elems: List<ElemDescription>
+)
+
+@Serializable
+class ElemAppServerConfig(
+    val mongoConnect: String = ""
 )
