@@ -6,6 +6,7 @@ import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.generators.elemDto
 import ru.altmanea.elem.generator.generators.elemMongo
+import ru.altmanea.elem.generator.generators.elemRest
 import ru.altmanea.elem.generator.generators.serverMain
 
 class Generator(
@@ -26,7 +27,8 @@ class Generator(
     fun elemServerFiles(description: ElemDescription) =
         listOf(
             elemDto(description),
-            elemMongo(description)
+            elemMongo(description),
+            elemRest(description)
         )
 
     fun clientFiles(): List<FileSpec> {

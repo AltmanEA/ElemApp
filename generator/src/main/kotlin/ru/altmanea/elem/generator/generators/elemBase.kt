@@ -5,7 +5,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.shared.ImportDef
-import ru.altmanea.elem.generator.shared.cfl
+import ru.altmanea.elem.generator.shared.ufl
 import kotlin.reflect.KClass
 
 typealias ClassBuilder = Pair<TypeSpec.Builder, FunSpec.Builder>
@@ -30,9 +30,9 @@ fun ClassBuilder.addPropParam(
     )
 }
 
-fun Generator.elemBase(description: ElemDescription, className: String): ElemBase {
+fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
     val innerConstructors =
-        description.tables.map {
+        elem.tables.map {
             FunSpec
                 .constructorBuilder().apply {
                     it.props.map {
@@ -40,9 +40,9 @@ fun Generator.elemBase(description: ElemDescription, className: String): ElemBas
                     }
                 }
         }
-    val innerClasses = description.tables.map {
+    val innerClasses = elem.tables.map {
         TypeSpec
-            .classBuilder("${className}${cfl(it.name)}")
+            .classBuilder("${className}${ufl(it.name)}")
             .addAnnotation(ImportDef.serializable)
             .addProperties(
                 it.props.map {
@@ -56,10 +56,10 @@ fun Generator.elemBase(description: ElemDescription, className: String): ElemBas
         FunSpec
             .constructorBuilder()
             .apply {
-                description.props.map {
+                elem.props.map {
                     addParameter(it.key, it.value.type)
                 }
-                description.tables.map {
+                elem.tables.map {
                     addParameter(
                         ParameterSpec
                             .builder(
@@ -67,7 +67,7 @@ fun Generator.elemBase(description: ElemDescription, className: String): ElemBas
                                 LIST.parameterizedBy(
                                     ClassName(
                                         packageName,
-                                        "${className}${cfl(it.name)}"
+                                        "${className}${ufl(it.name)}"
                                     )
                                 )
                             )
@@ -80,14 +80,14 @@ fun Generator.elemBase(description: ElemDescription, className: String): ElemBas
         .classBuilder(className)
         .addAnnotation(ImportDef.serializable)
         .apply {
-            description.props.map {
+            elem.props.map {
                 addProperty(
                     PropertySpec
                         .builder(it.key, it.value.type)
                         .initializer(it.key)
                         .build()
                 )
-                description.tables.map {
+                elem.tables.map {
                     addProperty(
                         PropertySpec
                             .builder(
@@ -95,7 +95,7 @@ fun Generator.elemBase(description: ElemDescription, className: String): ElemBas
                                 LIST.parameterizedBy(
                                     ClassName(
                                         packageName,
-                                        "${className}${cfl(it.name)}"
+                                        "${className}${ufl(it.name)}"
                                     )
                                 )
                             )

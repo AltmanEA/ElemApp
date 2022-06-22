@@ -3,6 +3,7 @@ package ru.altmanea.elem.generator.generators
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
+import ru.altmanea.elem.generator.shared.lfl
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
@@ -58,15 +59,27 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     val application = ClassName("io.ktor.server.application", "Application")
-    val mainModule = FunSpec
+
+    val mainModuleBuiler = FunSpec
         .builder("main")
         .receiver(application)
-        .build()
+    mainModuleBuiler.beginControlFlow("routing")
+    config.elems.forEach {
+        val funName = lfl(it.name) + "Routes"
+        mainModuleBuiler.addStatement("$funName()")
+        fileSpec.addImport(config.packageName, funName)
+    }
+    mainModuleBuiler.endControlFlow()
+    val mainModule = mainModuleBuiler.build()
 
     fileSpec
         .addFunction(mainModule)
         .addImport("io.ktor.server.engine", "embeddedServer")
         .addImport("io.ktor.server.netty", "Netty")
+        .addImport("io.ktor.server.routing", "Route")
+        .addImport("io.ktor.server.routing", "routing")
+
+
 
     mainFun
         .addStatement("embeddedServer(\n" +

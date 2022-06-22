@@ -9,9 +9,9 @@ import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.shared.ImportDef
 
-fun Generator.elemMongo(description: ElemDescription): FileSpec {
-    val className = description.name + "Mongo"
-    val (baseClass, innerClasses) = elemBase(description, className)
+fun Generator.elemMongo(elem: ElemDescription): FileSpec {
+    val className = elem.name + "Mongo"
+    val (baseClass, innerClasses) = elemBase(elem, className)
 
     val idClassName = ClassName("org.litote.kmongo", "Id")
     baseClass.second
