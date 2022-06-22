@@ -21,6 +21,8 @@ dependencies {
     implementation("ru.altmanea.elem:generator:0.1")
     implementation("org.litote.kmongo:kmongo-serialization:4.6.1")
     implementation("org.litote.kmongo:kmongo-id-serialization:4.6.1")
+    implementation("io.ktor:ktor-server-core:2.0.2")
+    implementation("io.ktor:ktor-server-netty:2.0.2")
     implementation("org.slf4j:slf4j-api:1.7.36")
     implementation("org.slf4j:slf4j-log4j12:1.7.36")
 }

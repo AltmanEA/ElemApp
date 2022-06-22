@@ -10,7 +10,8 @@ fun Generator.serverMain(): FileSpec {
     val mainFun = FunSpec
         .builder("main")
 
-    mongoMain(fileSpec,mainFun)
+    mongoMain(fileSpec, mainFun)
+    ktorMain(fileSpec, mainFun)
 
     return fileSpec
         .addFunction(
@@ -53,4 +54,29 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
         )
 
     }
+}
+
+fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
+    val application = ClassName("io.ktor.server.application", "Application")
+    val mainModule = FunSpec
+        .builder("main")
+        .receiver(application)
+        .build()
+
+    fileSpec
+        .addFunction(mainModule)
+        .addImport("io.ktor.server.engine", "embeddedServer")
+        .addImport("io.ktor.server.netty", "Netty")
+
+    mainFun
+        .addStatement("embeddedServer(\n" +
+                "        Netty,\n" +
+                "        port = ${config.serverConfig.serverPort},\n" +
+                "        host = %S,\n" +
+                "    ) {\n" +
+                "        %N()\n" +
+                "    }.start(wait = true)",
+            config.serverConfig.serverHost,
+            mainModule
+        )
 }
