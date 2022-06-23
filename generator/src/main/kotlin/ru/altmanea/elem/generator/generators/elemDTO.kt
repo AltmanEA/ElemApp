@@ -3,12 +3,12 @@ package ru.altmanea.elem.generator.generators
 import com.squareup.kotlinpoet.FileSpec
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
+import ru.altmanea.elem.generator.server.dtoClassName
 
 fun Generator.elemDto(elem: ElemDescription): FileSpec {
-    val className = elem.name + "DTO"
-    val (baseClass, innerClasses) = elemBase(elem, className)
+    val (baseClass, innerClasses) = elemBase(elem, elem.dtoClassName)
     return FileSpec
-        .builder(packageName, className)
+        .builder(packageName, elem.dtoClassName)
         .addType(
             baseClass.build()
         )

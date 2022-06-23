@@ -1,7 +1,6 @@
 package ru.altmanea.elem.generator.config
 
 import kotlinx.serialization.Serializable
-import java.util.StringJoiner
 
 @Serializable
 class ElemAppConfig(

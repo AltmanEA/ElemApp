@@ -1,14 +1,13 @@
 package ru.altmanea.elem.generator
 
-import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.generators.elemDto
-import ru.altmanea.elem.generator.generators.elemMongo
-import ru.altmanea.elem.generator.generators.elemRest
-import ru.altmanea.elem.generator.generators.serverMain
+import ru.altmanea.elem.generator.server.elemMongo
+import ru.altmanea.elem.generator.server.elemRest
+import ru.altmanea.elem.generator.server.serverMain
 
 class Generator(
     val config: ElemAppConfig
@@ -26,7 +25,7 @@ class Generator(
         return result
     }
 
-    fun elemServerFiles(description: ElemDescription) =
+    private fun elemServerFiles(description: ElemDescription) =
         listOf(
             elemDto(description),
             elemMongo(description),
@@ -41,7 +40,7 @@ class Generator(
         return result
     }
 
-    fun elemClientFiles(description: ElemDescription) =
+    private fun elemClientFiles(description: ElemDescription) =
         listOf(
             elemDto(description),
             elemComp(description)
@@ -60,17 +59,4 @@ class Generator(
             .build()
     }
 
-    /**
-     * Accumulator for FileSpec imports.
-     *
-     * - call fileImport.clear() before FileSpec processing;
-     * - call importAll() before FileSpec build.
-     */
-    val fileImport = ArrayList<Pair<String, String>>()
-    fun FileSpec.Builder.importAll(): FileSpec.Builder{
-        fileImport.forEach{
-            this.addImport(it.first, it.second)
-        }
-        return this
-    }
 }

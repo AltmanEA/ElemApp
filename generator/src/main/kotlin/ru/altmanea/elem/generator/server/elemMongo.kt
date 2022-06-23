@@ -1,32 +1,31 @@
-package ru.altmanea.elem.generator.generators
+package ru.altmanea.elem.generator.server
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import com.squareup.kotlinpoet.PropertySpec
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
-import ru.altmanea.elem.generator.server.SDef
-import ru.altmanea.elem.generator.shared.ImportDef
+import ru.altmanea.elem.generator.generators.build
+import ru.altmanea.elem.generator.generators.elemBase
+import ru.altmanea.elem.generator.shared.Def
+
+private val newIdFun = MemberName(SDef.packageKMongo, "newId")
 
 fun Generator.elemMongo(elem: ElemDescription): FileSpec {
-    val className = SDef.mongoClassname(elem.name)
+    val className = elem.mongoClassName
     val (baseClass, innerClasses) = elemBase(elem, className)
 
-    val idClassName = ClassName(SDef.packageKMongo, "Id")
     baseClass.second
         .addParameter(
             ParameterSpec
-                .builder("id", idClassName.parameterizedBy(ClassName(packageName, className)))
-                .defaultValue("newId()")
+                .builder("id", SDef.idClassName.parameterizedBy(ClassName(packageName, className)))
+                .defaultValue("%M()", newIdFun)
                 .build()
         )
     baseClass.first
         .addProperty(
             PropertySpec
-                .builder("id", idClassName.parameterizedBy(ClassName(packageName, className)))
-                .addAnnotation(ImportDef.contextual)
+                .builder("id", SDef.idClassName.parameterizedBy(ClassName(packageName, className)))
+                .addAnnotation(Def.contextual)
                 .initializer("id")
                 .build()
         )
@@ -43,6 +42,5 @@ fun Generator.elemMongo(elem: ElemDescription): FileSpec {
                 )
             }
         }
-        .addImport(SDef.packageKMongo, "newId")
         .build()
 }

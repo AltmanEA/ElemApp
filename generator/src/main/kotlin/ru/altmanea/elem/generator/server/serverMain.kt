@@ -1,15 +1,18 @@
-package ru.altmanea.elem.generator.generators
+package ru.altmanea.elem.generator.server
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
-import ru.altmanea.elem.generator.server.SDef
-import ru.altmanea.elem.generator.shared.lfl
+
+private val kMongoClass = MemberName(SDef.packageKMongo, "KMongo")
+private val getCollectionFun = MemberName(SDef.packageKMongo, "getCollection")
+private val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
+private val netty = MemberName("io.ktor.server.netty", "Netty")
+private val routingFun = MemberName(SDef.packageRouting, "routing")
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
         .builder(config.packageName, "${config.name}Main")
-    fileImport.clear()
 
     val mainFun = FunSpec
         .builder("main")
@@ -21,43 +24,37 @@ fun Generator.serverMain(): FileSpec {
         .addFunction(
             mainFun.build()
         )
-        .importAll()
         .build()
 }
 
 fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val mongoClient = ClassName(SDef.packageMongoClient, "MongoClient")
-    val mongoDatabase = ClassName(SDef.packageMongoClient, "MongoDatabase")
-    val mongoCollection = ClassName(SDef.packageMongoClient, "MongoCollection")
+    val mongoClientClass = ClassName(SDef.packageMongoClient, "MongoClient")
+    val mongoDatabaseClass = ClassName(SDef.packageMongoClient, "MongoDatabase")
+    val mongoCollectionClass = ClassName(SDef.packageMongoClient, "MongoCollection")
 
-    val client = PropertySpec
-        .builder("mongoClient", mongoClient)
-        .initializer(CodeBlock.of("KMongo.createClient(%S)", config.serverConfig.mongoConnect))
+    val mongoClient = PropertySpec
+        .builder("mongoClient", mongoClientClass)
+        .initializer(CodeBlock.of("%M.createClient(%S)", kMongoClass, config.serverConfig.mongoConnect))
         .build()
 
-    val database = PropertySpec
-        .builder("mongoDatabase", mongoDatabase)
-        .initializer(CodeBlock.of("%N.getDatabase(%S)", client, config.name))
+    val mongoDatabase = PropertySpec
+        .builder("mongoDatabase", mongoDatabaseClass)
+        .initializer(CodeBlock.of("%N.getDatabase(%S)", mongoClient, config.name))
         .build()
 
-    fileSpec.addProperty(client)
-        .addProperty(database)
-
-    fileImport.addAll(listOf(
-        SDef.packageKMongo to "KMongo",
-        SDef.packageKMongo to "getCollection"
-    ))
+    fileSpec.addProperty(mongoClient)
+        .addProperty(mongoDatabase)
 
     config.elems.map {
         fileSpec.addProperty(
             PropertySpec
                 .builder(
                     "collection${it.name}",
-                    mongoCollection.parameterizedBy(
+                    mongoCollectionClass.parameterizedBy(
                         ClassName(config.packageName, it.name + "Mongo")
                     )
                 )
-                .initializer(CodeBlock.of("%N.getCollection()", database))
+                .initializer(CodeBlock.of("%N.%M()", mongoDatabase, getCollectionFun))
                 .build()
         )
 
@@ -70,11 +67,9 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     val mainModuleBuiler = FunSpec
         .builder("main")
         .receiver(application)
-    mainModuleBuiler.beginControlFlow("routing")
+    mainModuleBuiler.beginControlFlow("%M", routingFun)
     config.elems.forEach {
-        val funName = lfl(it.name) + "Routes"
-        mainModuleBuiler.addStatement("$funName()")
-        fileSpec.addImport(config.packageName, funName)
+        mainModuleBuiler.addStatement("${it.routingFunName}()")
     }
     mainModuleBuiler.endControlFlow()
     val mainModule = mainModuleBuiler.build()
@@ -82,20 +77,16 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     fileSpec
         .addFunction(mainModule)
 
-    fileImport.addAll(listOf(
-        "io.ktor.server.engine" to "embeddedServer",
-        "io.ktor.server.netty" to "Netty",
-        SDef.packageRouting to "routing"
-    ))
-
     mainFun
-        .addStatement("embeddedServer(\n" +
-                "        Netty,\n" +
+        .addStatement("%M(\n" +
+                "        %M,\n" +
                 "        port = ${config.serverConfig.serverPort},\n" +
                 "        host = %S,\n" +
                 "    ) {\n" +
                 "        %N()\n" +
                 "    }.start(wait = true)",
+            embeddedServer,
+            netty,
             config.serverConfig.serverHost,
             mainModule
         )
