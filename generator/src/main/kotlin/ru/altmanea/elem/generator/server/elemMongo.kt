@@ -7,13 +7,14 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
+import ru.altmanea.elem.generator.server.SDef
 import ru.altmanea.elem.generator.shared.ImportDef
 
 fun Generator.elemMongo(elem: ElemDescription): FileSpec {
-    val className = elem.name + "Mongo"
+    val className = SDef.mongoClassname(elem.name)
     val (baseClass, innerClasses) = elemBase(elem, className)
 
-    val idClassName = ClassName("org.litote.kmongo", "Id")
+    val idClassName = ClassName(SDef.packageKMongo, "Id")
     baseClass.second
         .addParameter(
             ParameterSpec
@@ -42,6 +43,6 @@ fun Generator.elemMongo(elem: ElemDescription): FileSpec {
                 )
             }
         }
-        .addImport("org.litote.kmongo", "newId")
+        .addImport(SDef.packageKMongo, "newId")
         .build()
 }

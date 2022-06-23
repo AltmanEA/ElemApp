@@ -1,5 +1,6 @@
 package ru.altmanea.elem.generator
 
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
 import ru.altmanea.elem.generator.config.ElemAppConfig
@@ -12,6 +13,7 @@ import ru.altmanea.elem.generator.generators.serverMain
 class Generator(
     val config: ElemAppConfig
 ) {
+
     val packageName
         get() = config.packageName
 
@@ -56,5 +58,19 @@ class Generator(
             .builder(config.packageName, className)
             .addType(elemClass)
             .build()
+    }
+
+    /**
+     * Accumulator for FileSpec imports.
+     *
+     * - call fileImport.clear() before FileSpec processing;
+     * - call importAll() before FileSpec build.
+     */
+    val fileImport = ArrayList<Pair<String, String>>()
+    fun FileSpec.Builder.importAll(): FileSpec.Builder{
+        fileImport.forEach{
+            this.addImport(it.first, it.second)
+        }
+        return this
     }
 }

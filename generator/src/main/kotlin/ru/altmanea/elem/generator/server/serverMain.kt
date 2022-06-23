@@ -3,11 +3,14 @@ package ru.altmanea.elem.generator.generators
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
+import ru.altmanea.elem.generator.server.SDef
 import ru.altmanea.elem.generator.shared.lfl
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
         .builder(config.packageName, "${config.name}Main")
+    fileImport.clear()
+
     val mainFun = FunSpec
         .builder("main")
 
@@ -18,13 +21,14 @@ fun Generator.serverMain(): FileSpec {
         .addFunction(
             mainFun.build()
         )
+        .importAll()
         .build()
 }
 
 fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val mongoClient = ClassName("com.mongodb.client", "MongoClient")
-    val mongoDatabase = ClassName("com.mongodb.client", "MongoDatabase")
-    val mongoCollection = ClassName("com.mongodb.client", "MongoCollection")
+    val mongoClient = ClassName(SDef.packageMongoClient, "MongoClient")
+    val mongoDatabase = ClassName(SDef.packageMongoClient, "MongoDatabase")
+    val mongoCollection = ClassName(SDef.packageMongoClient, "MongoCollection")
 
     val client = PropertySpec
         .builder("mongoClient", mongoClient)
@@ -38,8 +42,11 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 
     fileSpec.addProperty(client)
         .addProperty(database)
-        .addImport("org.litote.kmongo", "KMongo")
-        .addImport("org.litote.kmongo", "getCollection")
+
+    fileImport.addAll(listOf(
+        SDef.packageKMongo to "KMongo",
+        SDef.packageKMongo to "getCollection"
+    ))
 
     config.elems.map {
         fileSpec.addProperty(
@@ -58,7 +65,7 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 }
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val application = ClassName("io.ktor.server.application", "Application")
+    val application = ClassName(SDef.packageApplication, "Application")
 
     val mainModuleBuiler = FunSpec
         .builder("main")
@@ -74,12 +81,12 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 
     fileSpec
         .addFunction(mainModule)
-        .addImport("io.ktor.server.engine", "embeddedServer")
-        .addImport("io.ktor.server.netty", "Netty")
-        .addImport("io.ktor.server.routing", "Route")
-        .addImport("io.ktor.server.routing", "routing")
 
-
+    fileImport.addAll(listOf(
+        "io.ktor.server.engine" to "embeddedServer",
+        "io.ktor.server.netty" to "Netty",
+        SDef.packageRouting to "routing"
+    ))
 
     mainFun
         .addStatement("embeddedServer(\n" +
