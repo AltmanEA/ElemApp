@@ -19,6 +19,7 @@ sourceSets.main {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
     implementation("ru.altmanea.elem:generator:0.1")
+    implementation("ru.altmanea.elem:core:0.1")
     implementation("org.litote.kmongo:kmongo-serialization:4.6.1")
     implementation("org.litote.kmongo:kmongo-id-serialization:4.6.1")
     implementation("io.ktor:ktor-server-core:2.0.2")

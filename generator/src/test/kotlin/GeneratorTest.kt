@@ -7,7 +7,7 @@ class GeneratorsTest : StringSpec({
     "elems" {
         val generator = Generator(config)
         val serverFileSpecs = generator.serverFiles()
-        serverFileSpecs.size shouldBe 3
+        serverFileSpecs.size shouldBe 4
         val clientFileSpecs = generator.clientFiles()
         clientFileSpecs.size shouldBe 2
     }

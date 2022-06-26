@@ -49,9 +49,9 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
         fileSpec.addProperty(
             PropertySpec
                 .builder(
-                    "collection${it.name}",
+                    it.mongoCollectionName,
                     mongoCollectionClass.parameterizedBy(
-                        ClassName(config.packageName, it.name + "Mongo")
+                        ClassName(config.packageName, it.mongoClassName)
                     )
                 )
                 .initializer(CodeBlock.of("%N.%M()", mongoDatabase, getCollectionFun))
@@ -64,15 +64,13 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     val application = ClassName(SDef.packageApplication, "Application")
 
-    val mainModuleBuiler = FunSpec
+    val mainModule = FunSpec
         .builder("main")
         .receiver(application)
-    mainModuleBuiler.beginControlFlow("%M", routingFun)
-    config.elems.forEach {
-        mainModuleBuiler.addStatement("${it.routingFunName}()")
-    }
-    mainModuleBuiler.endControlFlow()
-    val mainModule = mainModuleBuiler.build()
+        .beginControlFlow("%M", routingFun)
+        .addStatement("addElemRoutes()")
+        .endControlFlow()
+        .build()
 
     fileSpec
         .addFunction(mainModule)

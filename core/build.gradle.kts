@@ -1,36 +1,31 @@
-group = "ru.altmanea.elem.generator"
+group = "ru.altmanea.elem.core"
 version = "0.1"
 
-
-plugins {
+plugins{
     kotlin("jvm") version "1.7.0"
     kotlin("plugin.serialization") version "1.7.0"
     `maven-publish`
 }
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    implementation("com.squareup:kotlinpoet:1.12.0")
-    implementation("ru.altmanea.elem:core:0.1")
-    testImplementation("io.kotest:kotest-runner-junit5:5.3.1")
-    testImplementation("io.kotest:kotest-assertions-core:5.3.1")
-    testImplementation("ru.altmanea.elem:config:0.1")
+    implementation("org.litote.kmongo:kmongo-serialization:4.6.1")
+    implementation("io.ktor:ktor-server-core:2.0.2")
 }
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "ru.altmanea.elem"
-            artifactId = "generator"
+            artifactId = "core"
             version = "0.1"
 
             from(components["kotlin"])
         }
     }
 }
-

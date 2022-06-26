@@ -22,6 +22,7 @@ class Generator(
             result.addAll(elemServerFiles(it))
         }
         result.add(serverMain())
+        result.add(elemRest())
         return result
     }
 
@@ -29,7 +30,6 @@ class Generator(
         listOf(
             elemDto(description),
             elemMongo(description),
-            elemRest(description)
         )
 
     fun clientFiles(): List<FileSpec> {
