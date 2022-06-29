@@ -8,9 +8,12 @@ class Def {
         const val packageSerialization = "kotlinx.serialization"
         const val packageCore = "ru.altmanea.elem.core"
         const val packageKtorServer = "io.ktor.server"
+        const val packageKtorSerial = "io.ktor.serialization.kotlinx.json"
         const val packageKtorHTTP = "io.ktor.http"
         const val packageKMongo = "org.litote.kmongo"
         const val packageMongoClient = "com.mongodb.client"
+
+
 
         val serializable = ClassName(packageSerialization, "Serializable")
         val contextual = ClassName(packageSerialization, "Contextual")

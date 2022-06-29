@@ -4,6 +4,7 @@ import com.squareup.kotlinpoet.ClassName
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.server.elemMongo
+import ru.altmanea.elem.generator.server.elemRest
 
 class ElemGenerator(
     val config: ElemAppConfig,
@@ -35,7 +36,8 @@ class ElemGenerator(
     fun server() =
         listOf(
             elemClient(),
-            elemMongo()
+            elemMongo(),
+            elemRest()
         )
 
     fun client() =

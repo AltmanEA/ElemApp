@@ -64,6 +64,11 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     val application = ClassName(Def.packageKtorServer+".application", "Application")
+    val installFun = MemberName(Def.packageKtorServer+".application", "install")
+    val contentNegotiation =MemberName("${Def.packageKtorServer}.plugins.contentnegotiation", "ContentNegotiation")
+    val jsonFun = MemberName(Def.packageKtorSerial, "json")
+    val jsonClass = ClassName("kotlinx.serialization.json", "Json")
+    val idSerail = MemberName("org.litote.kmongo.id.serialization", "IdKotlinXSerializationModule")
 
     val rests = CodeBlock.builder()
     config.elems.forEach {
@@ -73,6 +78,9 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     val mainModule = FunSpec
         .builder("main")
         .receiver(application)
+        .beginControlFlow("%M(%M)", installFun, contentNegotiation)
+        .addStatement("%M(%T { serializersModule = %M })", jsonFun, jsonClass, idSerail)
+        .endControlFlow()
         .beginControlFlow("%M", routingFun)
         .addCode(rests.build())
         .endControlFlow()

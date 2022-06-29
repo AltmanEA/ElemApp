@@ -13,9 +13,9 @@ private val statusCode = MemberName(Def.packageKtorHTTP, "HttpStatusCode")
 private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
 private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
 private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
-private val insertOne = MemberName(Def.packageMongoClient, "insertOne")
+//private val insertOne = MemberName(Def.packageMongoClient, "insertOne")
 
-fun Generator.elemRest(elem: ElemDescription): FileSpec {
+fun ElemGenerator.elemRest(): FileSpec {
 
     val verbs =
         CodeBlock
@@ -65,8 +65,7 @@ fun postGet(elem: ElemDescription) =
             callObject, receive
         )
         .addStatement(
-            "${elem.mongoCollectionName}.%M(newElems.mongo)",
-            insertOne
+            "${elem.mongoCollectionName}.insertOne(newElems.toMongo())"
         )
         .addStatement(
             "%M.%M(%S, status = %M.Created)",
