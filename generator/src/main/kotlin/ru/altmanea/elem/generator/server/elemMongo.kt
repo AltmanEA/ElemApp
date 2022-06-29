@@ -2,45 +2,76 @@ package ru.altmanea.elem.generator.server
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import ru.altmanea.elem.generator.Generator
-import ru.altmanea.elem.generator.config.ElemDescription
-import ru.altmanea.elem.generator.generators.build
-import ru.altmanea.elem.generator.generators.elemBase
-import ru.altmanea.elem.generator.shared.Def
+import ru.altmanea.elem.generator.shared.*
 
-private val newIdFun = MemberName(SDef.packageKMongo, "newId")
+private val newIdFun = MemberName(Def.packageKMongo, "newId")
 
-fun Generator.elemMongo(elem: ElemDescription): FileSpec {
-    val className = elem.mongoClassName
-    val (baseClass, innerClasses) = elemBase(elem, className)
+fun ElemGenerator.elemMongo(): FileSpec {
+    val base = elemBase(mongoClass, mongoInners)
 
-    baseClass.second
+    base.mainConstructorBuilder
         .addParameter(
             ParameterSpec
-                .builder("id", SDef.idClassName.parameterizedBy(ClassName(packageName, className)))
+                .builder("id", Def.idClassName.parameterizedBy(mongoClass))
                 .defaultValue("%M()", newIdFun)
                 .build()
         )
-    baseClass.first
+
+    base.mainClassBuilder
         .addProperty(
             PropertySpec
-                .builder("id", SDef.idClassName.parameterizedBy(ClassName(packageName, className)))
+                .builder("id", Def.idClassName.parameterizedBy(mongoClass))
                 .addAnnotation(Def.contextual)
                 .initializer("id")
                 .build()
         )
 
-    return FileSpec
-        .builder(packageName, className)
-        .addType(
-            baseClass.build()
-        )
-        .apply {
-            innerClasses.map {
-                addType(
-                    it.build()
-                )
-            }
+    val fileSpec = FileSpec
+        .builder(packageName, elem.mongo)
+        .addElemBase(base)
+    clientToMongo().forEach {
+        fileSpec.addFunction(it)
+    }
+    return fileSpec.build()
+}
+
+private fun ElemGenerator.clientToMongo(): List<FunSpec> {
+    val result = ArrayList<FunSpec>()
+
+    elem.tables.forEach {
+        val values = CodeBlock.builder().indent()
+        it.props.forEach{
+            values.addStatement("${it.key},")
         }
+        values.unindent()
+        val funSpec = FunSpec
+            .builder("toMongo")
+            .receiver(clientInners[it.name]!!)
+            .addCode("return %T(\n", mongoInners[it.name]!!)
+            .addCode(values.build())
+            .addCode(")")
+            .build()
+        result.add(funSpec)
+    }
+
+
+    val mainValues = CodeBlock.builder().indent()
+    elem.props.forEach {
+        mainValues.addStatement("${it.key},")
+    }
+    elem.tables.forEach {
+        mainValues.addStatement("${it.name}.map{ it.toMongo() },")
+    }
+    mainValues.unindent()
+
+    result.add(FunSpec
+        .builder("toMongo")
+        .receiver(clientClass)
+        .addCode("return %T(\n", mongoClass)
+        .addCode(mainValues.build())
+        .addCode(")")
         .build()
+    )
+
+    return result
 }

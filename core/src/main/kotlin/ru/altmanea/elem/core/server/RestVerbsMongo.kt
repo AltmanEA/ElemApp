@@ -20,7 +20,7 @@ class RestVerbsMongo<T: Any>(
 
     private val get: Route.() -> Route = {
         get {
-            val elems = mongoCollection.find().toList()
+            val elems: List<T> = mongoCollection.find().toList()
             if (elems.isEmpty())
                 call.respondText("No elems found", status = HttpStatusCode.NotFound)
             else

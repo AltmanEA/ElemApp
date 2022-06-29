@@ -3,74 +3,74 @@ package ru.altmanea.elem.generator.server
 import com.squareup.kotlinpoet.*
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
+import ru.altmanea.elem.generator.shared.*
 
-fun Generator.elemRest(): FileSpec {
-    val codeBlock =
+private val routeFun = MemberName("${Def.packageKtorServer}.routing", "route")
+private val callObject = MemberName("${Def.packageKtorServer}.application", "call")
+private val getFun = MemberName("${Def.packageKtorServer}.routing", "get")
+private val postFun = MemberName("${Def.packageKtorServer}.routing", "post")
+private val statusCode = MemberName(Def.packageKtorHTTP, "HttpStatusCode")
+private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
+private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
+private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
+private val insertOne = MemberName(Def.packageMongoClient, "insertOne")
+
+fun Generator.elemRest(elem: ElemDescription): FileSpec {
+
+    val verbs =
         CodeBlock
             .builder()
-            .indent()
-            .addStatement(".verbs")
-            .beginControlFlow(".forEach")
-            .addStatement("it()")
+            .add(verbGet(elem))
+            .add(postGet(elem))
+            .build()
+
+    val elemRoute =
+        FunSpec
+            .builder(elem.rest.lowerFirstLetter)
+            .receiver(Def.routeClassname)
+            .beginControlFlow("%M(%S)", routeFun, elem.path)
+            .addCode(verbs)
             .endControlFlow()
             .build()
 
-    val restFun =
-        FunSpec
-            .builder("addElemRoutes")
-            .receiver(SDef.routeClassname)
-    config.elems.forEach {
-        restFun
-            .addCode(
-                "%T(\n" +
-                        "\t${it.mongoClassName}::class,\n" +
-                        "\t${it.mongoCollectionName}\n" +
-                        ")\n",
-                SDef.restVerbsMongoClass
-            )
-            .addCode(codeBlock)
-    }
-
     return FileSpec
-        .builder(packageName, "AddElemRoutes")
-        .addFunction(restFun.build())
+        .builder(packageName, elem.rest.lowerFirstLetter)
+        .addFunction(elemRoute)
         .build()
 }
 
+fun verbGet(elem: ElemDescription) =
+    CodeBlock
+        .builder()
+        .beginControlFlow("%M", getFun)
+        .addStatement("val elems = %N.find().toList()", elem.mongoCollectionName)
+        .beginControlFlow("if(elems.isEmpty())")
+        .addStatement(
+            "%M.%M(%S, status = %M.NotFound)",
+            callObject, respondText, "No elems found", statusCode
+        )
+        .endControlFlow()
+        .beginControlFlow("else")
+        .addStatement("%M.%M(elems)", callObject, respond)
+        .endControlFlow()
+        .endControlFlow()
+        .build()
 
-//
-//private val callObject = MemberName(SDef.packageApplication, "call")
-//private val respondFun = MemberName(SDef.packageResponse, "respond")
-//private val routeFun = MemberName(SDef.packageRouting, "route")
-//private val getFun = MemberName(SDef.packageRouting, "get")
-//
-//fun Generator.elemRest(elem: ElemDescription): FileSpec {
-//
-//    val elemRouteObj =
-//        PropertySpec
-//            .builder(elem.verbObjName, SDef.restVerbsInterface)
-//            .initializer(
-//                "%T(\n" +
-//                        "${elem.mongoClassName}::class,\n" +
-//                        "${elem.mongoCollectionName}\n" +
-//                        ")",
-//                SDef.restVerbsMongoClass
-//            )
-//            .build()
-//
-//    val elemRoute =
-//        FunSpec
-//            .builder(elem.routingFunName)
-//            .receiver(SDef.routeClassname)
-//            .beginControlFlow("%M(%S)", routeFun, elem.name)
-//            .addCode("%N.addVerb()", elemRouteObj)
-//            .endControlFlow()
-//            .build()
-//
-//
-//    return FileSpec
-//        .builder(packageName, elem.restClassName)
-//        .addProperty(elemRouteObj)
-//        .addFunction(elemRoute)
-//        .build()
-//}
+fun postGet(elem: ElemDescription) =
+    CodeBlock
+        .builder()
+        .beginControlFlow("%M", postFun)
+        .addStatement(
+            "val newElems = %M.%M<${elem.client}>()",
+            callObject, receive
+        )
+        .addStatement(
+            "${elem.mongoCollectionName}.%M(newElems.mongo)",
+            insertOne
+        )
+        .addStatement(
+            "%M.%M(%S, status = %M.Created)",
+            callObject, respondText, "Elems stored", statusCode
+        )
+        .endControlFlow()
+        .build()

@@ -3,12 +3,13 @@ package ru.altmanea.elem.generator.server
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
+import ru.altmanea.elem.generator.shared.*
 
-private val kMongoClass = MemberName(SDef.packageKMongo, "KMongo")
-private val getCollectionFun = MemberName(SDef.packageKMongo, "getCollection")
+private val kMongoClass = MemberName(Def.packageKMongo, "KMongo")
+private val getCollectionFun = MemberName(Def.packageKMongo, "getCollection")
 private val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
 private val netty = MemberName("io.ktor.server.netty", "Netty")
-private val routingFun = MemberName(SDef.packageRouting, "routing")
+private val routingFun = MemberName("${Def.packageKtorServer}.routing", "routing")
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
@@ -28,9 +29,9 @@ fun Generator.serverMain(): FileSpec {
 }
 
 fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val mongoClientClass = ClassName(SDef.packageMongoClient, "MongoClient")
-    val mongoDatabaseClass = ClassName(SDef.packageMongoClient, "MongoDatabase")
-    val mongoCollectionClass = ClassName(SDef.packageMongoClient, "MongoCollection")
+    val mongoClientClass = ClassName(Def.packageMongoClient, "MongoClient")
+    val mongoDatabaseClass = ClassName(Def.packageMongoClient, "MongoDatabase")
+    val mongoCollectionClass = ClassName(Def.packageMongoClient, "MongoCollection")
 
     val mongoClient = PropertySpec
         .builder("mongoClient", mongoClientClass)
@@ -51,7 +52,7 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
                 .builder(
                     it.mongoCollectionName,
                     mongoCollectionClass.parameterizedBy(
-                        ClassName(config.packageName, it.mongoClassName)
+                        ClassName(config.packageName, it.mongo)
                     )
                 )
                 .initializer(CodeBlock.of("%N.%M()", mongoDatabase, getCollectionFun))
@@ -62,13 +63,18 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 }
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val application = ClassName(SDef.packageApplication, "Application")
+    val application = ClassName(Def.packageKtorServer+".application", "Application")
+
+    val rests = CodeBlock.builder()
+    config.elems.forEach {
+        rests.addStatement("%N()", it.rest.lowerFirstLetter)
+    }
 
     val mainModule = FunSpec
         .builder("main")
         .receiver(application)
         .beginControlFlow("%M", routingFun)
-        .addStatement("addElemRoutes()")
+        .addCode(rests.build())
         .endControlFlow()
         .build()
 

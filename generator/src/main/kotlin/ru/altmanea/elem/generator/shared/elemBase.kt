@@ -1,36 +1,42 @@
-package ru.altmanea.elem.generator.generators
+package ru.altmanea.elem.generator.shared
 
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import ru.altmanea.elem.generator.Generator
-import ru.altmanea.elem.generator.config.ElemDescription
-import ru.altmanea.elem.generator.shared.Def
-import ru.altmanea.elem.generator.shared.upperFirstLetter
-import kotlin.reflect.KClass
 
-typealias ClassBuilder = Pair<TypeSpec.Builder, FunSpec.Builder>
-typealias ElemBase = Pair<ClassBuilder, List<ClassBuilder>>
-
-fun ClassBuilder.build() =
-    first
-        .primaryConstructor(second.build())
-        .build()
-
-fun ClassBuilder.addPropParam(
-    name: String,
-    type: KClass<*>,
-    modifiers: List<KModifier> = emptyList()
+class ElemBase(
+    val mainClassBuilder: TypeSpec.Builder,
+    val mainConstructorBuilder: FunSpec.Builder,
+    val innerClassBuilders: List<TypeSpec.Builder>,
+    val innerConstructorBuilders: List<FunSpec.Builder>
 ) {
-    second.addParameter(name, type, modifiers)
-    first.addProperty(
-        PropertySpec
-            .builder(name, type, modifiers)
-            .initializer(name)
+    val mainConstructor
+        get() = mainConstructorBuilder.build()
+    val mainClass
+        get() = mainClassBuilder
+            .primaryConstructor(mainConstructor)
             .build()
-    )
+
 }
 
-fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
+fun FileSpec.Builder.addElemBase(elemBase: ElemBase) =
+    addType(elemBase.mainClass)
+        .apply {
+            elemBase.innerClassBuilders
+                .zip(elemBase.innerConstructorBuilders)
+                .map {
+                    addType(
+                        it.first
+                            .primaryConstructor(it.second.build())
+                            .build()
+                    )
+                }
+
+        }
+
+fun ElemGenerator.elemBase(
+    className: ClassName,
+    inners: Map<String, ClassName>
+): ElemBase {
     val innerConstructors =
         elem.tables.map {
             FunSpec
@@ -42,7 +48,7 @@ fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
         }
     val innerClasses = elem.tables.map {
         TypeSpec
-            .classBuilder(className + it.name.upperFirstLetter)
+            .classBuilder(inners[it.name]!!)
             .addAnnotation(Def.serializable)
             .addProperties(
                 it.props.map {
@@ -65,10 +71,7 @@ fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
                             .builder(
                                 it.name,
                                 LIST.parameterizedBy(
-                                    ClassName(
-                                        packageName,
-                                        className + it.name.upperFirstLetter
-                                    )
+                                    inners[it.name]!!
                                 )
                             )
                             .defaultValue("emptyList()")
@@ -93,10 +96,7 @@ fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
                             .builder(
                                 it.name,
                                 LIST.parameterizedBy(
-                                    ClassName(
-                                        packageName,
-                                        className + it.name.upperFirstLetter
-                                    )
+                                    inners[it.name]!!
                                 )
                             )
                             .initializer(it.name)
@@ -105,8 +105,10 @@ fun Generator.elemBase(elem: ElemDescription, className: String): ElemBase {
                 }
             }
         }
-    return Pair(
-        Pair(baseClass, baseConstructor),
-        innerClasses.zip(innerConstructors)
+    return ElemBase(
+        baseClass,
+        baseConstructor,
+        innerClasses,
+        innerConstructors
     )
 }
