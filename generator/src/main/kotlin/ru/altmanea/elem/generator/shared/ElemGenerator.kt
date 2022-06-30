@@ -16,6 +16,10 @@ class ElemGenerator(
         packageName,
         "${elem.name.upperFirstLetter}Client"
     )
+    val serverClass = ClassName(
+        packageName,
+        "${elem.name.upperFirstLetter}Server"
+    )
     val mongoClass = ClassName(
         packageName,
         "${elem.name.upperFirstLetter}Mongo"
@@ -24,6 +28,12 @@ class ElemGenerator(
         it.name to ClassName(
             packageName,
             "${elem.name.upperFirstLetter}Client${it.name.upperFirstLetter}"
+        )
+    }
+    val serverInners = elem.tables.associate {
+        it.name to ClassName(
+            packageName,
+            "${elem.name.upperFirstLetter}Server${it.name.upperFirstLetter}"
         )
     }
     val mongoInners = elem.tables.associate {
@@ -36,6 +46,7 @@ class ElemGenerator(
     fun server() =
         listOf(
             elemClient(),
+            elemServer(),
             elemMongo(),
             elemRest()
         )

@@ -1,7 +1,6 @@
 package ru.altmanea.elem.generator.server
 
 import com.squareup.kotlinpoet.*
-import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.shared.*
 
@@ -13,15 +12,17 @@ private val statusCode = MemberName(Def.packageKtorHTTP, "HttpStatusCode")
 private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
 private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
 private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
-//private val insertOne = MemberName(Def.packageMongoClient, "insertOne")
+private val objectId = MemberName("org.bson.types", "ObjectId")
+private val toIdFun = MemberName("${Def.packageKMongo}.id", "toId")
+private val inOperator = MemberName(Def.packageKMongo, "`in`")
 
 fun ElemGenerator.elemRest(): FileSpec {
 
     val verbs =
         CodeBlock
             .builder()
-            .add(verbGet(elem))
-            .add(postGet(elem))
+            .add(verbGet())
+            .add(verbPost())
             .build()
 
     val elemRoute =
@@ -39,11 +40,20 @@ fun ElemGenerator.elemRest(): FileSpec {
         .build()
 }
 
-fun verbGet(elem: ElemDescription) =
+fun ElemGenerator.verbGet() =
     CodeBlock
         .builder()
         .beginControlFlow("%M", getFun)
-        .addStatement("val elems = %N.find().toList()", elem.mongoCollectionName)
+        .add(queryIds())
+        .add(
+            "val elemsMongo =\n" +
+                    "\tif (ids == null)\n" +
+                    "\t\t${elem.mongoCollectionName}.find()\n" +
+                    "\telse\n" +
+                    "\t\t${elem.mongoCollectionName}.find(%T::_id %M ids)\n" +
+                    "val elems = elemsMongo.map { it.toServer() }.toList()\n",
+            mongoClass, inOperator
+        )
         .beginControlFlow("if(elems.isEmpty())")
         .addStatement(
             "%M.%M(%S, status = %M.NotFound)",
@@ -56,7 +66,25 @@ fun verbGet(elem: ElemDescription) =
         .endControlFlow()
         .build()
 
-fun postGet(elem: ElemDescription) =
+//`get` {
+//    val params = call.request.queryParameters["id"]
+//    val ids = params
+//        ?.split(",")
+//        ?.map { ObjectId(it).toId<TestElemMongo>() }
+//    val elemsMongo =
+//        if (ids == null)
+//            collectionTestElem.find()
+//        else
+//            collectionTestElem.find(TestElemMongo::_id `in` ids)
+//    val elems = elemsMongo.map { it.toServer() }.toList()
+//    if (elems.isEmpty()) {
+//        call.respondText("No elems found", status = HttpStatusCode.NotFound)
+//    } else {
+//        call.respond(elems)
+//    }
+//}
+
+fun ElemGenerator.verbPost() =
     CodeBlock
         .builder()
         .beginControlFlow("%M", postFun)
@@ -72,4 +100,33 @@ fun postGet(elem: ElemDescription) =
             callObject, respondText, "Elems stored", statusCode
         )
         .endControlFlow()
+        .build()
+
+
+fun idParam() =
+    CodeBlock
+        .builder()
+        .add(
+            "val id = call.parameters[\"id\"] ?: return@get call.respondText(\n" +
+                    "\t\"Missing or malformed id\",\n" +
+                    "\tstatus = HttpStatusCode.BadRequest\n" +
+                    ")\n"
+        )
+        .build()
+
+
+//    val params = call.request.queryParameters["id"]
+//    val ids = params
+//        ?.split(",")
+//        ?.map { ObjectId(it).toId<TestElemMongo>() }
+fun ElemGenerator.queryIds() =
+    CodeBlock
+        .builder()
+        .add(
+            "val params = call.request.queryParameters[\"id\"]\n" +
+                    "val ids = params\n" +
+                    "\t?.split(\",\")\n" +
+                    "\t?.map { %M(it).%M<%T>() }\n",
+            objectId, toIdFun, mongoClass
+        )
         .build()

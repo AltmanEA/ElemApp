@@ -12,7 +12,7 @@ fun ElemGenerator.elemMongo(): FileSpec {
     base.mainConstructorBuilder
         .addParameter(
             ParameterSpec
-                .builder("id", Def.idClassName.parameterizedBy(mongoClass))
+                .builder("_id", Def.idClassName.parameterizedBy(mongoClass))
                 .defaultValue("%M()", newIdFun)
                 .build()
         )
@@ -20,9 +20,9 @@ fun ElemGenerator.elemMongo(): FileSpec {
     base.mainClassBuilder
         .addProperty(
             PropertySpec
-                .builder("id", Def.idClassName.parameterizedBy(mongoClass))
+                .builder("_id", Def.idClassName.parameterizedBy(mongoClass))
                 .addAnnotation(Def.contextual)
-                .initializer("id")
+                .initializer("_id")
                 .build()
         )
 
