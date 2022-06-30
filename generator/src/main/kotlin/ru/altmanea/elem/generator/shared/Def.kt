@@ -25,12 +25,6 @@ class Def {
     }
 }
 
-val ElemDescription.client
-    get() = "${this.name}Client"
-
-val ElemDescription.server
-    get() = "${this.name}Server"
-
 val ElemDescription.mongo
     get() = "${this.name}Mongo"
 

@@ -27,7 +27,7 @@ fun ElemGenerator.elemMongo(): FileSpec {
         )
 
     val fileSpec = FileSpec
-        .builder(packageName, elem.mongo)
+        .builder(packageName, mongoClass.simpleName)
         .addElemBase(base)
     clientToMongo().forEach {
         fileSpec.addFunction(it)

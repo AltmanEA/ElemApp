@@ -22,7 +22,7 @@ class ElemGenerator(
     )
     val mongoClass = ClassName(
         packageName,
-        "${elem.name.upperFirstLetter}Mongo"
+        elem.mongo
     )
     val clientInners = elem.tables.associate {
         it.name to ClassName(

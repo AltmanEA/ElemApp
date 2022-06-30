@@ -4,6 +4,6 @@ import com.squareup.kotlinpoet.*
 
 fun ElemGenerator.elemClient() =
     FileSpec
-        .builder(packageName, elem.client)
+        .builder(packageName, clientClass.simpleName)
         .addElemBase(elemBase(clientClass, clientInners))
         .build()

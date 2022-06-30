@@ -22,7 +22,7 @@ fun ElemGenerator.elemServer(): FileSpec {
         )
 
     val fileSpec = FileSpec
-        .builder(packageName, elem.server)
+        .builder(packageName, serverClass.simpleName)
         .addElemBase(base)
     mongoToServer().forEach {
         fileSpec.addFunction(it)

@@ -89,8 +89,8 @@ fun ElemGenerator.verbPost() =
         .builder()
         .beginControlFlow("%M", postFun)
         .addStatement(
-            "val newElems = %M.%M<${elem.client}>()",
-            callObject, receive
+            "val newElems = %M.%M<%T>()",
+            callObject, receive, clientClass
         )
         .addStatement(
             "${elem.mongoCollectionName}.insertOne(newElems.toMongo())"
