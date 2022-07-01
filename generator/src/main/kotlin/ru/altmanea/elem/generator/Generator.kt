@@ -2,6 +2,7 @@ package ru.altmanea.elem.generator
 
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import ru.altmanea.elem.generator.client.clientMain
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.shared.elemClient
@@ -37,6 +38,7 @@ class Generator(
                     .client()
             )
         }
+        result.add(clientMain())
         return result
     }
 

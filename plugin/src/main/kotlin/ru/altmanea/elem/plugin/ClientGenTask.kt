@@ -19,14 +19,12 @@ open class ClientGenTask : DefaultTask() {
 
     @TaskAction
     fun invoke() {
-        fun invoke() {
-            Generator(
-                Json.decodeFromString(config)
-            )
-                .clientFiles()
-                .forEach {
-                    it.writeTo(outputDir)
-                }
-        }
+        Generator(
+            Json.decodeFromString(config)
+        )
+            .clientFiles()
+            .forEach {
+                it.writeTo(outputDir)
+            }
     }
 }

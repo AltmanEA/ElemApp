@@ -13,7 +13,7 @@ private val routingFun = MemberName("${Def.packageKtorServer}.routing", "routing
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
-        .builder(config.packageName, "${config.name}Main")
+        .builder(config.packageName, "${config.name}ServerMain")
 
     val mainFun = FunSpec
         .builder("main")
