@@ -1,6 +1,7 @@
 package ru.altmanea.elem.generator.shared
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.config.ElemDescription
 
 class Def {
@@ -13,15 +14,13 @@ class Def {
         const val packageKMongo = "org.litote.kmongo"
         const val packageMongoClient = "com.mongodb.client"
 
-
-
         val serializable = ClassName(packageSerialization, "Serializable")
         val contextual = ClassName(packageSerialization, "Contextual")
         val routeClassname = ClassName("$packageKtorServer.routing", "Route")
         val idClassName = ClassName(packageKMongo, "Id")
-        val restVerbsInterface = ClassName("$packageCore.server", "RestVerbs")
-        val restVerbsMongoClass = ClassName("$packageCore.server", "RestVerbsMongo")
-
+        val getFun = MemberName("$packageKtorServer.routing", "get")
+        val callObject = MemberName("${packageKtorServer}.application", "call")
+        val statusCodeClass = MemberName(packageKtorHTTP, "HttpStatusCode")
     }
 }
 

@@ -8,6 +8,7 @@ import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.shared.elemClient
 import ru.altmanea.elem.generator.server.elemMongo
 import ru.altmanea.elem.generator.server.elemRest
+import ru.altmanea.elem.generator.server.index
 import ru.altmanea.elem.generator.server.serverMain
 import ru.altmanea.elem.generator.shared.ElemGenerator
 
@@ -27,6 +28,7 @@ class Generator(
             )
         }
         result.add(serverMain())
+        result.add(index())
         return result
     }
 

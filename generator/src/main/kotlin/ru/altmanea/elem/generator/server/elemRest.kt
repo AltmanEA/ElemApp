@@ -1,14 +1,13 @@
 package ru.altmanea.elem.generator.server
 
-import com.squareup.kotlinpoet.*
-import ru.altmanea.elem.generator.config.ElemDescription
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.shared.*
 
 private val routeFun = MemberName("${Def.packageKtorServer}.routing", "route")
-private val callObject = MemberName("${Def.packageKtorServer}.application", "call")
-private val getFun = MemberName("${Def.packageKtorServer}.routing", "get")
 private val postFun = MemberName("${Def.packageKtorServer}.routing", "post")
-private val statusCode = MemberName(Def.packageKtorHTTP, "HttpStatusCode")
 private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
 private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
 private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
@@ -43,7 +42,7 @@ fun ElemGenerator.elemRest(): FileSpec {
 fun ElemGenerator.verbGet() =
     CodeBlock
         .builder()
-        .beginControlFlow("%M", getFun)
+        .beginControlFlow("%M", Def.getFun)
         .add(queryIds())
         .add(
             "val elemsMongo =\n" +
@@ -57,11 +56,11 @@ fun ElemGenerator.verbGet() =
         .beginControlFlow("if(elems.isEmpty())")
         .addStatement(
             "%M.%M(%S, status = %M.NotFound)",
-            callObject, respondText, "No elems found", statusCode
+            Def.callObject, respondText, "No elems found", Def.statusCodeClass
         )
         .endControlFlow()
         .beginControlFlow("else")
-        .addStatement("%M.%M(elems)", callObject, respond)
+        .addStatement("%M.%M(elems)", Def.callObject, respond)
         .endControlFlow()
         .endControlFlow()
         .build()
@@ -90,14 +89,14 @@ fun ElemGenerator.verbPost() =
         .beginControlFlow("%M", postFun)
         .addStatement(
             "val newElems = %M.%M<%T>()",
-            callObject, receive, clientClass
+            Def.callObject, receive, clientClass
         )
         .addStatement(
             "${elem.mongoCollectionName}.insertOne(newElems.toMongo())"
         )
         .addStatement(
             "%M.%M(%S, status = %M.Created)",
-            callObject, respondText, "Elems stored", statusCode
+            Def.callObject, respondText, "Elems stored", Def.statusCodeClass
         )
         .endControlFlow()
         .build()

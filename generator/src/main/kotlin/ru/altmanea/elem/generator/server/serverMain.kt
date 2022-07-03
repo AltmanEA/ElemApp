@@ -74,6 +74,7 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
     config.elems.forEach {
         rests.addStatement("%N()", it.rest.lowerFirstLetter)
     }
+    rests.addStatement("index()")
 
     val mainModule = FunSpec
         .builder("main")
@@ -103,3 +104,4 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
             mainModule
         )
 }
+

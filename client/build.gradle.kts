@@ -51,3 +51,16 @@ buildscript {
 }
 the<ru.altmanea.elem.plugin.GenPluginExtension>().config =
     kotlinx.serialization.json.Json.encodeToString(config)
+
+tasks.register<Copy>("copyBuild") {
+    from("/build/distributions/client.js", "/build/distributions/client.js.map")
+    into("../server/src/main/resources/")
+}
+tasks.register<Copy>("copyBuildToBuild") {
+    from("/build/distributions/client.js", "/build/distributions/client.js.map")
+    into("../server/build/resources/main/")
+}
+tasks.named("build") { finalizedBy("copyBuild") }
+tasks.named("build") { finalizedBy("copyBuildToBuild") }
+tasks.named("browserDevelopmentWebpack") { finalizedBy("copyBuild") }
+tasks.named("browserDevelopmentWebpack") { finalizedBy("copyBuildToBuild") }
