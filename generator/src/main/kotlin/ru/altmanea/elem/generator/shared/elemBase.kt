@@ -49,7 +49,7 @@ fun ElemGenerator.elemBase(
     val innerClasses = elem.tables.map {
         TypeSpec
             .classBuilder(inners[it.name]!!)
-            .addAnnotation(Def.serializable)
+            .addAnnotation(Serial.Serializable)
             .addProperties(
                 it.props.map {
                     PropertySpec
@@ -81,7 +81,7 @@ fun ElemGenerator.elemBase(
             }
     val baseClass = TypeSpec
         .classBuilder(className)
-        .addAnnotation(Def.serializable)
+        .addAnnotation(Serial.Serializable)
         .apply {
             elem.props.map {
                 addProperty(

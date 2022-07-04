@@ -11,9 +11,9 @@ private val postFun = MemberName("${Def.packageKtorServer}.routing", "post")
 private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
 private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
 private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
-private val objectId = MemberName("org.bson.types", "ObjectId")
-private val toIdFun = MemberName("${Def.packageKMongo}.id", "toId")
-private val inOperator = MemberName(Def.packageKMongo, "`in`")
+
+
+
 
 fun ElemGenerator.elemRest(): FileSpec {
 
@@ -51,7 +51,7 @@ fun ElemGenerator.verbGet() =
                     "\telse\n" +
                     "\t\t${elem.mongoCollectionName}.find(%T::_id %M ids)\n" +
                     "val elems = elemsMongo.map { it.toServer() }.toList()\n",
-            mongoClass, inOperator
+            mongoClass, Mongo.`in`
         )
         .beginControlFlow("if(elems.isEmpty())")
         .addStatement(
@@ -126,6 +126,6 @@ fun ElemGenerator.queryIds() =
                     "val ids = params\n" +
                     "\t?.split(\",\")\n" +
                     "\t?.map { %M(it).%M<%T>() }\n",
-            objectId, toIdFun, mongoClass
+            Mongo.objectId, Mongo.toId, mongoClass
         )
         .build()

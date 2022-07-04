@@ -8,7 +8,7 @@ val config = ElemAppConfig(
     ),
     listOf(
         ElemDescription(
-            "TestElem",
+            "ElemOne",
             mapOf(
                 "name" to PropsType.STRING,
                 "age" to PropsType.INT
@@ -21,11 +21,26 @@ val config = ElemAppConfig(
                     )
                 ),
                 RowDescription(
-                        "secondTable",
-                mapOf(
-                    "link" to PropsType.LINK
+                    "secondTable",
+                    mapOf(
+                        "link" to PropsType.LINK
+                    )
                 )
             )
+        ),
+        ElemDescription(
+            "ElemTwo",
+            mapOf(
+                "name" to PropsType.STRING,
+                "age" to PropsType.INT
+            ),
+            listOf(
+                RowDescription(
+                    "ThirdTable",
+                    mapOf(
+                        "number" to PropsType.INT
+                    )
+                )
             )
         )
     )

@@ -5,8 +5,8 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.shared.*
 
-private val kMongoClass = MemberName(Def.packageKMongo, "KMongo")
-private val getCollectionFun = MemberName(Def.packageKMongo, "getCollection")
+
+
 private val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
 private val netty = MemberName("io.ktor.server.netty", "Netty")
 private val routingFun = MemberName("${Def.packageKtorServer}.routing", "routing")
@@ -29,17 +29,14 @@ fun Generator.serverMain(): FileSpec {
 }
 
 fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val mongoClientClass = ClassName(Def.packageMongoClient, "MongoClient")
-    val mongoDatabaseClass = ClassName(Def.packageMongoClient, "MongoDatabase")
-    val mongoCollectionClass = ClassName(Def.packageMongoClient, "MongoCollection")
 
     val mongoClient = PropertySpec
-        .builder("mongoClient", mongoClientClass)
-        .initializer(CodeBlock.of("%M.createClient(%S)", kMongoClass, config.serverConfig.mongoConnect))
+        .builder("mongoClient", Mongo.MongoClient)
+        .initializer(CodeBlock.of("%M.createClient(%S)", Mongo.KMongo, config.serverConfig.mongoConnect))
         .build()
 
     val mongoDatabase = PropertySpec
-        .builder("mongoDatabase", mongoDatabaseClass)
+        .builder("mongoDatabase", Mongo.MongoDatabase)
         .initializer(CodeBlock.of("%N.getDatabase(%S)", mongoClient, config.name))
         .build()
 
@@ -51,11 +48,11 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
             PropertySpec
                 .builder(
                     it.mongoCollectionName,
-                    mongoCollectionClass.parameterizedBy(
+                    Mongo.MongoCollection.parameterizedBy(
                         ClassName(config.packageName, it.mongo)
                     )
                 )
-                .initializer(CodeBlock.of("%N.%M()", mongoDatabase, getCollectionFun))
+                .initializer(CodeBlock.of("%N.%M()", mongoDatabase, Mongo.getCollection))
                 .build()
         )
 

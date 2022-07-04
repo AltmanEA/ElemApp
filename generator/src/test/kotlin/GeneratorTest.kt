@@ -1,14 +1,17 @@
 import io.kotest.core.spec.style.StringSpec
-import io.kotest.matchers.shouldBe
+import io.kotest.engine.spec.tempdir
 import ru.altmanea.elem.generator.Generator
 
 class GeneratorsTest : StringSpec({
 
     "elems" {
+        val dir = tempdir()
         val generator = Generator(config)
-        val serverFileSpecs = generator.serverFiles()
-        serverFileSpecs.size shouldBe 5
-        val clientFileSpecs = generator.clientFiles()
-        clientFileSpecs.size shouldBe 2
+        generator.serverFiles().forEach {
+            it.writeTo(dir)
+        }
+        generator.clientFiles().forEach(){
+            it.writeTo(dir)
+        }
     }
 })

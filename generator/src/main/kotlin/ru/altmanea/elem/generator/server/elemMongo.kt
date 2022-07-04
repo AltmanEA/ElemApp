@@ -4,24 +4,22 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.shared.*
 
-private val newIdFun = MemberName(Def.packageKMongo, "newId")
-
 fun ElemGenerator.elemMongo(): FileSpec {
     val base = elemBase(mongoClass, mongoInners)
 
     base.mainConstructorBuilder
         .addParameter(
             ParameterSpec
-                .builder("_id", Def.idClassName.parameterizedBy(mongoClass))
-                .defaultValue("%M()", newIdFun)
+                .builder("_id", Mongo.Id.parameterizedBy(mongoClass))
+                .defaultValue("%M()", Mongo.newId)
                 .build()
         )
 
     base.mainClassBuilder
         .addProperty(
             PropertySpec
-                .builder("_id", Def.idClassName.parameterizedBy(mongoClass))
-                .addAnnotation(Def.contextual)
+                .builder("_id", Mongo.Id.parameterizedBy(mongoClass))
+                .addAnnotation(Serial.Contextual)
                 .initializer("_id")
                 .build()
         )

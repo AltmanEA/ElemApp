@@ -4,20 +4,38 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.config.ElemDescription
 
+class Serial{
+    companion object{
+        val Serializable = ClassName("kotlinx.serialization", "Serializable")
+        val Contextual = ClassName("kotlinx.serialization", "Contextual")
+    }
+}
+
+class Mongo{
+    companion object {
+        const val packageName = "org.litote.kmongo"
+        val Id = ClassName(packageName, "Id")
+        val newId = MemberName(packageName, "newId")
+        val `in` = MemberName(packageName, "`in`")
+        val toId = MemberName("${packageName}.id", "toId")
+        val objectId = MemberName("org.bson.types", "ObjectId")
+        val getCollection = MemberName(packageName, "getCollection")
+        val KMongo = MemberName(packageName, "KMongo")
+
+        const val packageClient = "com.mongodb.client"
+        val MongoClient = ClassName(packageClient, "MongoClient")
+        val MongoDatabase = ClassName(packageClient, "MongoDatabase")
+        val MongoCollection = ClassName(packageClient, "MongoCollection")
+    }
+}
+
 class Def {
     companion object {
-        const val packageSerialization = "kotlinx.serialization"
-        const val packageCore = "ru.altmanea.elem.core"
         const val packageKtorServer = "io.ktor.server"
         const val packageKtorSerial = "io.ktor.serialization.kotlinx.json"
         const val packageKtorHTTP = "io.ktor.http"
-        const val packageKMongo = "org.litote.kmongo"
-        const val packageMongoClient = "com.mongodb.client"
 
-        val serializable = ClassName(packageSerialization, "Serializable")
-        val contextual = ClassName(packageSerialization, "Contextual")
         val routeClassname = ClassName("$packageKtorServer.routing", "Route")
-        val idClassName = ClassName(packageKMongo, "Id")
         val getFun = MemberName("$packageKtorServer.routing", "get")
         val callObject = MemberName("${packageKtorServer}.application", "call")
         val statusCodeClass = MemberName(packageKtorHTTP, "HttpStatusCode")
