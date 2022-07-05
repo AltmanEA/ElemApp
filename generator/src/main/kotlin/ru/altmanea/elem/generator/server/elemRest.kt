@@ -3,17 +3,7 @@ package ru.altmanea.elem.generator.server
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.shared.*
-
-private val routeFun = MemberName("${Def.packageKtorServer}.routing", "route")
-private val postFun = MemberName("${Def.packageKtorServer}.routing", "post")
-private val respond = MemberName("${Def.packageKtorServer}.response", "respond")
-private val respondText = MemberName("${Def.packageKtorServer}.response", "respondText")
-private val receive = MemberName("${Def.packageKtorServer}.request", "receive")
-
-
-
 
 fun ElemGenerator.elemRest(): FileSpec {
 
@@ -27,8 +17,8 @@ fun ElemGenerator.elemRest(): FileSpec {
     val elemRoute =
         FunSpec
             .builder(elem.rest.lowerFirstLetter)
-            .receiver(Def.routeClassname)
-            .beginControlFlow("%M(%S)", routeFun, elem.path)
+            .receiver(Ktor.RouteClass)
+            .beginControlFlow("%M(%S)", Ktor.route, elem.path)
             .addCode(verbs)
             .endControlFlow()
             .build()
@@ -42,7 +32,7 @@ fun ElemGenerator.elemRest(): FileSpec {
 fun ElemGenerator.verbGet() =
     CodeBlock
         .builder()
-        .beginControlFlow("%M", Def.getFun)
+        .beginControlFlow("%M", Ktor.get)
         .add(queryIds())
         .add(
             "val elemsMongo =\n" +
@@ -56,11 +46,11 @@ fun ElemGenerator.verbGet() =
         .beginControlFlow("if(elems.isEmpty())")
         .addStatement(
             "%M.%M(%S, status = %M.NotFound)",
-            Def.callObject, respondText, "No elems found", Def.statusCodeClass
+            Ktor.callObject, Ktor.respondText, "No elems found", Def.statusCodeClass
         )
         .endControlFlow()
         .beginControlFlow("else")
-        .addStatement("%M.%M(elems)", Def.callObject, respond)
+        .addStatement("%M.%M(elems)", Ktor.callObject, Ktor.respond)
         .endControlFlow()
         .endControlFlow()
         .build()
@@ -86,17 +76,17 @@ fun ElemGenerator.verbGet() =
 fun ElemGenerator.verbPost() =
     CodeBlock
         .builder()
-        .beginControlFlow("%M", postFun)
+        .beginControlFlow("%M", Ktor.post)
         .addStatement(
             "val newElems = %M.%M<%T>()",
-            Def.callObject, receive, clientClass
+            Ktor.callObject, Ktor.receive, clientClass
         )
         .addStatement(
             "${elem.mongoCollectionName}.insertOne(newElems.toMongo())"
         )
         .addStatement(
             "%M.%M(%S, status = %M.Created)",
-            Def.callObject, respondText, "Elems stored", Def.statusCodeClass
+            Ktor.callObject, Ktor.respondText, "Elems stored", Def.statusCodeClass
         )
         .endControlFlow()
         .build()

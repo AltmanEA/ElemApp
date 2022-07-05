@@ -6,7 +6,6 @@ import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.shared.*
 
 
-
 private val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
 private val netty = MemberName("io.ktor.server.netty", "Netty")
 private val routingFun = MemberName("${Def.packageKtorServer}.routing", "routing")
@@ -60,17 +59,19 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 }
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val application = ClassName(Def.packageKtorServer+".application", "Application")
-    val installFun = MemberName(Def.packageKtorServer+".application", "install")
-    val contentNegotiation =MemberName("${Def.packageKtorServer}.plugins.contentnegotiation", "ContentNegotiation")
+    val application = ClassName(Def.packageKtorServer + ".application", "Application")
+    val installFun = MemberName(Def.packageKtorServer + ".application", "install")
+    val contentNegotiation = MemberName("${Def.packageKtorServer}.plugins.contentnegotiation", "ContentNegotiation")
     val jsonFun = MemberName(Def.packageKtorSerial, "json")
     val jsonClass = ClassName("kotlinx.serialization.json", "Json")
     val idSerail = MemberName("org.litote.kmongo.id.serialization", "IdKotlinXSerializationModule")
 
     val rests = CodeBlock.builder()
+    rests.beginControlFlow("%M(%S)", Ktor.route, config.serverConfig.apiPath)
     config.elems.forEach {
         rests.addStatement("%N()", it.rest.lowerFirstLetter)
     }
+    rests.endControlFlow()
     rests.addStatement("index()")
 
     val mainModule = FunSpec
@@ -88,13 +89,14 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
         .addFunction(mainModule)
 
     mainFun
-        .addStatement("%M(\n" +
-                "        %M,\n" +
-                "        port = ${config.serverConfig.serverPort},\n" +
-                "        host = %S,\n" +
-                "    ) {\n" +
-                "        %N()\n" +
-                "    }.start(wait = true)",
+        .addStatement(
+            "%M(\n" +
+                    "        %M,\n" +
+                    "        port = ${config.serverConfig.serverPort},\n" +
+                    "        host = %S,\n" +
+                    "    ) {\n" +
+                    "        %N()\n" +
+                    "    }.start(wait = true)",
             embeddedServer,
             netty,
             config.serverConfig.serverHost,

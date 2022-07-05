@@ -5,20 +5,14 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.poet.Bracket
 import ru.altmanea.elem.generator.poet.block
 import ru.altmanea.elem.generator.shared.ElemGenerator
+import ru.altmanea.elem.generator.shared.path
 
 fun ElemGenerator.elemComp(): FileSpec {
-//    val query = useQuery<Any, Any, ElemOneClient, QueryKey>(
-//        queryKey = "".unsafeCast<QueryKey>(),
-//        queryFn = {
-//            fetchText(
-//                ""
-//            ).then {
-//
-//            }
-//        }
-//    )
 
     val queryCompCode = CodeBlock.builder().run {
+        val url = config.serverConfig.run{
+            "https://${serverHost}:${serverPort}/${apiPath}/${elem.path}"
+        }
         block("%T<%T>", React.FC, React.Props) {
             block(
                 "val query = %M<Any, Any, Any, %T>",
@@ -27,7 +21,7 @@ fun ElemGenerator.elemComp(): FileSpec {
             ) {
                 add("queryKey = %S.unsafeCast<QueryKey>(),\n", "${elem.name}Query")
                 block("queryFn = ") {
-                    add("%M(\n%S\n", JSLib.fetch, "")
+                    add("%M(\n%S\n", JSLib.fetch, url)
                     block(").then ") {
                         add("\n")
                     }
@@ -66,7 +60,7 @@ fun ElemGenerator.elemComp(): FileSpec {
 
 
 
-    return FileSpec.builder(packageName, "{${elem.name}Comp").run {
+    return FileSpec.builder(packageName, "${elem.name}Comp").run {
         addType(tableCompProps)
         addProperty(queryComp)
         addProperty(tableComp)

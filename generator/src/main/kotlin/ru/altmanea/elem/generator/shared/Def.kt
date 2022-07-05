@@ -35,9 +35,6 @@ class Def {
         const val packageKtorSerial = "io.ktor.serialization.kotlinx.json"
         const val packageKtorHTTP = "io.ktor.http"
 
-        val routeClassname = ClassName("$packageKtorServer.routing", "Route")
-        val getFun = MemberName("$packageKtorServer.routing", "get")
-        val callObject = MemberName("${packageKtorServer}.application", "call")
         val statusCodeClass = MemberName(packageKtorHTTP, "HttpStatusCode")
     }
 }

@@ -19,9 +19,9 @@ private val resourceFun = MemberName("io.ktor.server.http.content", "resource")
 
 fun Generator.index(): FileSpec {
     val index = FunSpec.builder("index").run {
-        receiver(Def.routeClassname)
-        block("%M", Def.getFun) {
-            block("%M.%M(%M.OK)", Def.callObject, respondHtml, Def.statusCodeClass) {
+        receiver(Ktor.RouteClass)
+        block("%M", Ktor.get) {
+            block("%M.%M(%M.OK)", Ktor.callObject, respondHtml, Def.statusCodeClass) {
                 block("%M", htmlHead) {
                     block("%M", htmlMeta) {
                         addStatement(" attributes += \"charset\" to \"UTF-8\"")
