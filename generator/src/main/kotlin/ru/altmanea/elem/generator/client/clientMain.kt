@@ -3,18 +3,18 @@ package ru.altmanea.elem.generator.client
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
-import ru.altmanea.elem.generator.poet.control
+import ru.altmanea.elem.generator.poet.block
 
 
 
 fun Generator.clientMain(): FileSpec {
 
     val navCode = CodeBlock.builder().run {
-        control("%T<%T>", React.FC, React.Props) {
-            control("%M", React.ul) {
+        block("%T<%T>", React.FC, React.Props) {
+            block("%M", React.ul) {
                 config.elems.forEach {
-                    control("%M", React.li) {
-                        control("%M", React.NavLink) {
+                    block("%M", React.li) {
+                        block("%M", React.NavLink) {
                             addStatement("to = %S", it.name)
                             addStatement("+%S", it.name)
                         }
@@ -39,8 +39,8 @@ fun Generator.clientMain(): FileSpec {
         .build()
 
     val appCode = CodeBlock.builder().run {
-        control("%T<%T>", React.FC, React.Props) {
-            control("%M", React.HashRouter) {
+        block("%T<%T>", React.FC, React.Props) {
+            block("%M", React.HashRouter) {
                 addStatement("%N {}", navProp)
             }
         }

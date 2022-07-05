@@ -1,6 +1,7 @@
 package ru.altmanea.elem.generator.shared
 
 import com.squareup.kotlinpoet.ClassName
+import ru.altmanea.elem.generator.client.elemComp
 import ru.altmanea.elem.generator.config.ElemAppConfig
 import ru.altmanea.elem.generator.config.ElemDescription
 import ru.altmanea.elem.generator.server.elemMongo
@@ -53,6 +54,8 @@ class ElemGenerator(
 
     fun client() =
         listOf(
-            elemClient()
+            elemClient(),
+            elemServer(),
+            elemComp()
         )
 }

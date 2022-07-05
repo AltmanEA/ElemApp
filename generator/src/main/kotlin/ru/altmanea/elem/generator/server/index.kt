@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.Generator
-import ru.altmanea.elem.generator.poet.control
+import ru.altmanea.elem.generator.poet.block
 import ru.altmanea.elem.generator.shared.Def
 
 private val respondHtml = MemberName("io.ktor.server.html", "respondHtml")
@@ -20,23 +20,23 @@ private val resourceFun = MemberName("io.ktor.server.http.content", "resource")
 fun Generator.index(): FileSpec {
     val index = FunSpec.builder("index").run {
         receiver(Def.routeClassname)
-        control("%M", Def.getFun) {
-            control("%M.%M(%M.OK)", Def.callObject, respondHtml, Def.statusCodeClass) {
-                control("%M", htmlHead) {
-                    control("%M", htmlMeta) {
+        block("%M", Def.getFun) {
+            block("%M.%M(%M.OK)", Def.callObject, respondHtml, Def.statusCodeClass) {
+                block("%M", htmlHead) {
+                    block("%M", htmlMeta) {
                         addStatement(" attributes += \"charset\" to \"UTF-8\"")
                     }
-                    control("%M", htmlTitle) {
+                    block("%M", htmlTitle) {
                         addStatement("+\"Web App Client\"")
                     }
                 }
-                control("%M", htmlBody) {
-                    control("%M (\"text/javascript\", \"client.js\")", htmlScript) {
+                block("%M", htmlBody) {
+                    block("%M (\"text/javascript\", \"client.js\")", htmlScript) {
                     }
                 }
             }
         }
-        control("%M", staticFun){
+        block("%M", staticFun){
             addStatement("%M(\"/client.js\",\"client.js\")", resourceFun)
             addStatement("%M(\"/client.js.map\",\"client.js.map\")", resourceFun)
         }

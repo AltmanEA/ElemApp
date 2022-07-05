@@ -24,3 +24,16 @@ class Browser {
         val document = MemberName("kotlinx.browser", "document")
     }
 }
+
+class ReactQuery {
+    companion object {
+        val useQuery = MemberName("react.query", "useQuery")
+        val QueryKey = ClassName("react.query", "QueryKey")
+
+    }
+}
+class JSLib {
+    companion object {
+        val fetch = MemberName("ru.altmanea.elem.jslib.kfetch", "fetchText")
+    }
+}
