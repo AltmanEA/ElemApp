@@ -29,15 +29,6 @@ class Mongo{
     }
 }
 
-class Def {
-    companion object {
-        const val packageKtorServer = "io.ktor.server"
-        const val packageKtorSerial = "io.ktor.serialization.kotlinx.json"
-        const val packageKtorHTTP = "io.ktor.http"
-
-        val statusCodeClass = MemberName(packageKtorHTTP, "HttpStatusCode")
-    }
-}
 
 val ElemDescription.mongo
     get() = "${this.name}Mongo"

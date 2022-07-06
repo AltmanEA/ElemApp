@@ -46,7 +46,7 @@ fun ElemGenerator.verbGet() =
         .beginControlFlow("if(elems.isEmpty())")
         .addStatement(
             "%M.%M(%S, status = %M.NotFound)",
-            Ktor.callObject, Ktor.respondText, "No elems found", Def.statusCodeClass
+            Ktor.callObject, Ktor.respondText, "No elems found", Ktor.statusCodeClass
         )
         .endControlFlow()
         .beginControlFlow("else")
@@ -54,24 +54,6 @@ fun ElemGenerator.verbGet() =
         .endControlFlow()
         .endControlFlow()
         .build()
-
-//`get` {
-//    val params = call.request.queryParameters["id"]
-//    val ids = params
-//        ?.split(",")
-//        ?.map { ObjectId(it).toId<TestElemMongo>() }
-//    val elemsMongo =
-//        if (ids == null)
-//            collectionTestElem.find()
-//        else
-//            collectionTestElem.find(TestElemMongo::_id `in` ids)
-//    val elems = elemsMongo.map { it.toServer() }.toList()
-//    if (elems.isEmpty()) {
-//        call.respondText("No elems found", status = HttpStatusCode.NotFound)
-//    } else {
-//        call.respond(elems)
-//    }
-//}
 
 fun ElemGenerator.verbPost() =
     CodeBlock
@@ -86,7 +68,7 @@ fun ElemGenerator.verbPost() =
         )
         .addStatement(
             "%M.%M(%S, status = %M.Created)",
-            Ktor.callObject, Ktor.respondText, "Elems stored", Def.statusCodeClass
+            Ktor.callObject, Ktor.respondText, "Elems stored", Ktor.statusCodeClass
         )
         .endControlFlow()
         .build()
@@ -103,11 +85,6 @@ fun idParam() =
         )
         .build()
 
-
-//    val params = call.request.queryParameters["id"]
-//    val ids = params
-//        ?.split(",")
-//        ?.map { ObjectId(it).toId<TestElemMongo>() }
 fun ElemGenerator.queryIds() =
     CodeBlock
         .builder()

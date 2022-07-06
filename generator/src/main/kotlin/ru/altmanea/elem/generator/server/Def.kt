@@ -2,7 +2,6 @@ package ru.altmanea.elem.generator.server
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.MemberName
-import ru.altmanea.elem.generator.shared.Def
 
 class Ktor {
     companion object {
@@ -13,6 +12,7 @@ class Ktor {
         val respondText = MemberName("io.ktor.server.response", "respondText")
         val receive = MemberName("io.ktor.server.request", "receive")
         val callObject = MemberName("io.ktor.server.application", "call")
+        val statusCodeClass = MemberName("io.ktor.http", "HttpStatusCode")
 
         val RouteClass = ClassName("io.ktor.server.routing", "Route")
     }

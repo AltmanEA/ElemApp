@@ -24,13 +24,14 @@ fun CodeBlock.Builder.block(
     controlFlow: String = "",
     vararg args: Any,
     bracket: Bracket = Bracket.Curly,
+    end: String = "\n",
     builder: CodeBlock.Builder.()->Unit
 ): CodeBlock.Builder{
     addStatement("$controlFlow ${bracket.open}", *args)
     indent()
     builder()
     unindent()
-    addStatement(bracket.close)
+    add(bracket.close + end)
     return this
 }
 

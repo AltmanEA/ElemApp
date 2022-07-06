@@ -3,12 +3,9 @@ package ru.altmanea.elem.generator.server
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
+import ru.altmanea.elem.generator.poet.Bracket
+import ru.altmanea.elem.generator.poet.block
 import ru.altmanea.elem.generator.shared.*
-
-
-private val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
-private val netty = MemberName("io.ktor.server.netty", "Netty")
-private val routingFun = MemberName("${Def.packageKtorServer}.routing", "routing")
 
 fun Generator.serverMain(): FileSpec {
     val fileSpec = FileSpec
@@ -59,48 +56,48 @@ fun Generator.mongoMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
 }
 
 fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
-    val application = ClassName(Def.packageKtorServer + ".application", "Application")
-    val installFun = MemberName(Def.packageKtorServer + ".application", "install")
-    val contentNegotiation = MemberName("${Def.packageKtorServer}.plugins.contentnegotiation", "ContentNegotiation")
-    val jsonFun = MemberName(Def.packageKtorSerial, "json")
+    val application = ClassName("io.ktor.server.application", "Application")
+    val installFun = MemberName("io.ktor.server.application", "install")
+    val contentNegotiation = MemberName("io.ktor.server.plugins.contentnegotiation", "ContentNegotiation")
+    val jsonFun = MemberName("io.ktor.serialization.kotlinx.json", "json")
     val jsonClass = ClassName("kotlinx.serialization.json", "Json")
-    val idSerail = MemberName("org.litote.kmongo.id.serialization", "IdKotlinXSerializationModule")
+    val idSerial = MemberName("org.litote.kmongo.id.serialization", "IdKotlinXSerializationModule")
+    val embeddedServer = MemberName("io.ktor.server.engine", "embeddedServer")
+    val netty = MemberName("io.ktor.server.netty", "Netty")
+    val routingFun = MemberName("io.ktor.server.routing", "routing")
 
-    val rests = CodeBlock.builder()
-    rests.beginControlFlow("%M(%S)", Ktor.route, config.serverConfig.apiPath)
-    config.elems.forEach {
-        rests.addStatement("%N()", it.rest.lowerFirstLetter)
+    val rests = CodeBlock.builder().run {
+        beginControlFlow("%M(%S)", Ktor.route, config.serverConfig.apiPath)
+        config.elems.forEach {
+            addStatement("%N()", it.rest.lowerFirstLetter)
+        }
+        endControlFlow()
+        addStatement("index()")
     }
-    rests.endControlFlow()
-    rests.addStatement("index()")
 
-    val mainModule = FunSpec
-        .builder("main")
-        .receiver(application)
-        .beginControlFlow("%M(%M)", installFun, contentNegotiation)
-        .addStatement("%M(%T { serializersModule = %M })", jsonFun, jsonClass, idSerail)
-        .endControlFlow()
-        .beginControlFlow("%M", routingFun)
-        .addCode(rests.build())
-        .endControlFlow()
-        .build()
+    val mainModule = FunSpec.builder("main").run {
+        receiver(application)
+        block("%M(%M)", installFun, contentNegotiation) {
+            addStatement("%M(%T { serializersModule = %M })", jsonFun, jsonClass, idSerial)
+        }
+        block("%M", routingFun) {
+            addCode(rests.build())
+        }
+        build()
+    }
 
     fileSpec
         .addFunction(mainModule)
 
-    mainFun
-        .addStatement(
-            "%M(\n" +
-                    "        %M,\n" +
-                    "        port = ${config.serverConfig.serverPort},\n" +
-                    "        host = %S,\n" +
-                    "    ) {\n" +
-                    "        %N()\n" +
-                    "    }.start(wait = true)",
-            embeddedServer,
-            netty,
-            config.serverConfig.serverHost,
-            mainModule
-        )
+    mainFun.addCode(CodeBlock.builder().run {
+        block("%M", embeddedServer, bracket = Bracket.Round, end = ""){
+            addStatement("factory = %M,", netty)
+            addStatement("port = ${config.serverConfig.serverPort},")
+            addStatement("host = %S", config.serverConfig.serverHost)
+        }
+        block(){
+            addStatement("%N()", mainModule)
+        }
+        build()
+    })
 }
-
