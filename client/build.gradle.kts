@@ -68,5 +68,14 @@ tasks.register<Copy>("copyBuildToBuild") {
 }
 tasks.named("build") { finalizedBy("copyBuild") }
 tasks.named("build") { finalizedBy("copyBuildToBuild") }
-tasks.named("browserDevelopmentWebpack") { finalizedBy("copyBuild") }
-tasks.named("browserDevelopmentWebpack") { finalizedBy("copyBuildToBuild") }
+
+tasks.register<Copy>("copyDev") {
+    from("/build/developmentExecutable/client.js", "/build/developmentExecutable/client.js.map")
+    into("../server/src/main/resources/")
+}
+tasks.register<Copy>("copyDevToBuild") {
+    from("/build/developmentExecutable/client.js", "/build/developmentExecutable/client.js.map")
+    into("../server/build/resources/main/")
+}
+tasks.named("browserDevelopmentWebpack") { finalizedBy("copyDev") }
+tasks.named("browserDevelopmentWebpack") { finalizedBy("copyDevToBuild") }

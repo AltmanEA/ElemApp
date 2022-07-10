@@ -4,26 +4,38 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.poet.Bracket
 import ru.altmanea.elem.generator.poet.block
-import ru.altmanea.elem.generator.shared.ElemGenerator
-import ru.altmanea.elem.generator.shared.path
+import ru.altmanea.elem.generator.shared.*
 
 fun ElemGenerator.elemComp(): FileSpec {
+    val dataType = List::class.asClassName().parameterizedBy(serverClass)
 
     val queryCompCode = CodeBlock.builder().run {
-        val url = config.serverConfig.run{
-            "https://${serverHost}:${serverPort}/${apiPath}/${elem.path}"
+        val url = config.serverConfig.run {
+            "http://${serverHost}:${serverPort}/${apiPath}/${elem.path}"
         }
         block("%T<%T>", React.FC, React.Props) {
             block(
-                "val query = %M<Any, Any, Any, %T>",
-                ReactQuery.useQuery, ReactQuery.QueryKey,
+                "val query = %M<%T, Any, %T, %T>",
+                ReactQuery.useQuery, dataType, dataType, ReactQuery.QueryKey,
                 bracket = Bracket.Round
             ) {
-                add("queryKey = %S.unsafeCast<QueryKey>(),\n", "${elem.name}Query")
+                addStatement("queryKey = %S.unsafeCast<QueryKey>(),", "${elem.name}Query")
                 block("queryFn = ") {
-                    add("%M(\n%S\n", JSLib.fetch, url)
+                    add("%M(\n\t%S\n", JSLib.fetch, url)
                     block(").then ") {
-                        add("\n")
+                        addStatement(
+                            "%T.decodeFromString(%T(${elem.server}.serializer()), it)",
+                            Serial.Json, Serial.ListSerializer
+                        )
+                    }
+                }
+            }
+            addStatement("if (query.isLoading) %M { +\"Loading ..\" }", React.div)
+            addStatement("else if (query.isError) %M { +\"Error!\" }", React.div)
+            block("else") {
+                block("child", bracket = Bracket.Round) {
+                    block("${elem.tableComp}.%M", React.create) {
+                        addStatement("elems = query.data ?: emptyList()")
                     }
                 }
             }
@@ -31,36 +43,43 @@ fun ElemGenerator.elemComp(): FileSpec {
         build()
     }
     val queryComp = PropertySpec
-        .builder("${elem.name}QueryComp", React.FC.parameterizedBy(React.Props))
+        .builder(elem.queryComp, React.FC.parameterizedBy(React.Props))
         .initializer(queryCompCode)
         .build()
 
     val tableCompProps = TypeSpec
-        .interfaceBuilder("${elem.name}TableProps")
+        .interfaceBuilder(elem.tableProps)
         .addSuperinterface(React.Props)
+        .addModifiers(KModifier.EXTERNAL)
         .addProperty(
             PropertySpec
-                .builder("elems", List::class.asClassName().parameterizedBy(clientClass))
+                .builder("elems", dataType)
                 .mutable()
                 .build()
         )
         .build()
 
-    val tableCompType = React.FC.parameterizedBy(ClassName(packageName, "${elem.name}TableProps"))
+    val tableCompType = React.FC.parameterizedBy(ClassName(packageName, elem.tableProps))
     val tableCompCode = CodeBlock.builder().run {
         block("%T", tableCompType) {
-
+            block("%M", React.ul) {
+                block("it.elems.map") {
+                    block("%M", React.li) {
+                        addStatement("it.name")
+                    }
+                }
+            }
         }
         build()
     }
     val tableComp = PropertySpec
-        .builder("${elem.name}TableComp", tableCompType)
+        .builder(elem.tableComp, tableCompType)
         .initializer(tableCompCode)
         .build()
 
 
 
-    return FileSpec.builder(packageName, "${elem.name}Comp").run {
+    return FileSpec.builder(packageName, elem.comp).run {
         addType(tableCompProps)
         addProperty(queryComp)
         addProperty(tableComp)

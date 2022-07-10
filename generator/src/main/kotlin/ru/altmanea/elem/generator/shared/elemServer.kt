@@ -2,7 +2,7 @@ package ru.altmanea.elem.generator.shared
 
 import com.squareup.kotlinpoet.*
 
-fun ElemGenerator.elemServer(): FileSpec {
+fun ElemGenerator.elemServer(toMongo: Boolean = true): FileSpec {
     val base = elemBase(serverClass, serverInners)
 
     base.mainConstructorBuilder
@@ -21,13 +21,18 @@ fun ElemGenerator.elemServer(): FileSpec {
                 .build()
         )
 
-    val fileSpec = FileSpec
-        .builder(packageName, serverClass.simpleName)
-        .addElemBase(base)
-    mongoToServer().forEach {
-        fileSpec.addFunction(it)
+    val fileSpec = FileSpec.builder(packageName, serverClass.simpleName).run {
+        addElemBase(base)
+        if(toMongo){
+            mongoToServer().forEach {
+                addFunction(it)
+            }
+        }
+        build()
     }
-    return fileSpec.build()
+
+
+    return fileSpec
 }
 
 private fun ElemGenerator.mongoToServer(): List<FunSpec> {

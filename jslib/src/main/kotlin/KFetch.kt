@@ -10,7 +10,7 @@ external fun fetch(
     options: FetchOptions = definedExternally
 ): Promise<HTTPResult>
 
-interface HTTPResult {
+external interface HTTPResult {
     fun json(): Promise<dynamic>
     fun text(): Promise<String>
 }

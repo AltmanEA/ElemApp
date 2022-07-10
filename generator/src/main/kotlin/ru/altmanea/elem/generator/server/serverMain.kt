@@ -95,9 +95,10 @@ fun Generator.ktorMain(fileSpec: FileSpec.Builder, mainFun: FunSpec.Builder) {
             addStatement("port = ${config.serverConfig.serverPort},")
             addStatement("host = %S", config.serverConfig.serverHost)
         }
-        block(){
+        block(end = ""){
             addStatement("%N()", mainModule)
         }
+        addStatement(".start(wait = true)")
         build()
     })
 }

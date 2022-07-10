@@ -4,7 +4,7 @@ val config = ElemAppConfig(
     "ConfigName",
     "ru.altmanea.elem.test",
     ElemAppServerConfig(
-        "mongodb://docker:mongopw@localhost:49153"
+        "mongodb://docker:mongopw@localhost:49154"
     ),
     listOf(
         ElemDescription(

@@ -55,7 +55,7 @@ class ElemGenerator(
     fun client() =
         listOf(
             elemClient(),
-            elemServer(),
+            elemServer(false),
             elemComp()
         )
 }

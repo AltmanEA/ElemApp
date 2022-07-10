@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import ru.altmanea.elem.generator.Generator
 import ru.altmanea.elem.generator.poet.block
-
+import ru.altmanea.elem.generator.shared.path
 
 
 fun Generator.clientMain(): FileSpec {
@@ -30,7 +30,16 @@ fun Generator.clientMain(): FileSpec {
         .build()
 
     val routerCode = CodeBlock.builder().run {
-        addStatement("+")
+        block("%T<%T>", React.FC, React.Props) {
+            block("%T", ReactRouter.Routes){
+                this@clientMain.config.elems.map {
+                    block("%T", ReactRouter.Route){
+                        addStatement("path = %S", it.path)
+                        addStatement("element = ${it.queryComp}.create()")
+                    }
+                }
+            }
+        }
     }.build()
 
     val routerProp = PropertySpec
@@ -38,10 +47,19 @@ fun Generator.clientMain(): FileSpec {
         .initializer(routerCode)
         .build()
 
+    val queryClientProp = PropertySpec
+        .builder("queryClient", ReactQuery.QueryClient)
+        .initializer("%T()", ReactQuery.QueryClient)
+        .build()
+
     val appCode = CodeBlock.builder().run {
         block("%T<%T>", React.FC, React.Props) {
-            block("%M", React.HashRouter) {
-                addStatement("%N {}", navProp)
+            block("%T", React.HashRouter) {
+                block("%T", ReactQuery.QueryClientProvider) {
+                    addStatement("client = %N", queryClientProp)
+                    addStatement("%N {}", navProp)
+                    addStatement("%N {}", routerProp)
+                }
             }
         }
     }.build()
@@ -60,10 +78,11 @@ fun Generator.clientMain(): FileSpec {
 
     return FileSpec.builder(config.packageName, "${config.name}ClientMain")
         .run {
+            addProperty(queryClientProp)
             addFunction(mainFun.build())
             addProperty(appProp)
             addProperty(navProp)
-//            addProperty(routerProp)
+            addProperty(routerProp)
             build()
         }
 }
