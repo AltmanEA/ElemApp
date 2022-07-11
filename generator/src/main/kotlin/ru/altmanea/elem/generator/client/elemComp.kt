@@ -65,7 +65,7 @@ fun ElemGenerator.elemComp(): FileSpec {
             block("%M", React.ul) {
                 block("it.elems.map") {
                     block("%M", React.li) {
-                        addStatement("it.name")
+                        addStatement("+it.name")
                     }
                 }
             }
