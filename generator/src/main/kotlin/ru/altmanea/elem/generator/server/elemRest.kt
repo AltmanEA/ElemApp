@@ -43,15 +43,7 @@ fun ElemGenerator.verbGet() =
                     "val elems = elemsMongo.map { it.toServer() }.toList()\n",
             mongoClass, Mongo.`in`
         )
-//        .beginControlFlow("if(elems.isEmpty())")
-//        .addStatement(
-//            "%M.%M(%S, status = %M.NotFound)",
-//            Ktor.callObject, Ktor.respondText, "No elems found", Ktor.statusCodeClass
-//        )
-//        .endControlFlow()
-//        .beginControlFlow("else")
         .addStatement("%M.%M(elems)", Ktor.callObject, Ktor.respond)
-//        .endControlFlow()
         .endControlFlow()
         .build()
 

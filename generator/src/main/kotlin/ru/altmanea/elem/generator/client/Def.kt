@@ -3,12 +3,12 @@ package ru.altmanea.elem.generator.client
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.MemberName
 import ru.altmanea.elem.generator.config.ElemDescription
-import ru.altmanea.elem.generator.shared.server
 
 
 class Browser {
     companion object {
         val document = MemberName("kotlinx.browser", "document")
+        val INPUT = MemberName("org.w3c.dom", "HTMLInputElement")
     }
 }
 
@@ -16,13 +16,17 @@ class React {
     companion object {
         val FC = ClassName("react", "FC")
         val Props = ClassName("react", "Props")
-
         val create = MemberName("react", "create")
         val createRoot = MemberName("react.dom.client", "createRoot")
+
+        val useRef = MemberName("react", "useRef")
 
         val ul = MemberName("react.dom.html.ReactHTML", "ul")
         val li = MemberName("react.dom.html.ReactHTML", "li")
         val div = MemberName("react.dom.html.ReactHTML", "div")
+        val details = MemberName("react.dom.html.ReactHTML", "details")
+        val summary = MemberName("react.dom.html.ReactHTML", "summary")
+        val input = MemberName("react.dom.html.ReactHTML", "input")
 
         val NavLink = MemberName("react.router.dom", "NavLink")
         val HashRouter = ClassName("react.router.dom", "HashRouter")
@@ -57,8 +61,8 @@ val ElemDescription.comp
 val ElemDescription.queryComp
     get() = "${this.name}Query"
 
-val ElemDescription.tableComp
-    get() = "${this.name}TableComp"
-
-val ElemDescription.tableProps
-    get() = "${this.name}TableProps"
+//val ElemDescription.tableComp
+//    get() = "${this.name}TableComp"
+//
+//val ElemDescription.tableProps
+//    get() = "${this.name}TableProps"

@@ -9,7 +9,7 @@ import ru.altmanea.elem.generator.shared.*
 fun ElemGenerator.elemComp(): FileSpec {
     val dataType = List::class.asClassName().parameterizedBy(serverClass)
 
-    val queryCompCode = CodeBlock.builder().run {
+    val queryCode = CodeBlock.builder().run {
         val url = config.serverConfig.run {
             "http://${serverHost}:${serverPort}/${apiPath}/${elem.path}"
         }
@@ -34,7 +34,7 @@ fun ElemGenerator.elemComp(): FileSpec {
             addStatement("else if (query.isError) %M { +\"Error!\" }", React.div)
             block("else") {
                 block("child", bracket = Bracket.Round) {
-                    block("${elem.tableComp}.%M", React.create) {
+                    block("${elem.comp}.%M", React.create) {
                         addStatement("elems = query.data ?: emptyList()")
                     }
                 }
@@ -44,11 +44,11 @@ fun ElemGenerator.elemComp(): FileSpec {
     }
     val queryComp = PropertySpec
         .builder(elem.queryComp, React.FC.parameterizedBy(React.Props))
-        .initializer(queryCompCode)
+        .initializer(queryCode)
         .build()
 
-    val tableCompProps = TypeSpec
-        .interfaceBuilder(elem.tableProps)
+    val compProps = TypeSpec
+        .interfaceBuilder("${elem.comp}Props")
         .addSuperinterface(React.Props)
         .addModifiers(KModifier.EXTERNAL)
         .addProperty(
@@ -59,30 +59,51 @@ fun ElemGenerator.elemComp(): FileSpec {
         )
         .build()
 
-    val tableCompType = React.FC.parameterizedBy(ClassName(packageName, elem.tableProps))
-    val tableCompCode = CodeBlock.builder().run {
-        block("%T", tableCompType) {
-            block("%M", React.ul) {
-                block("it.elems.map") {
-                    block("%M", React.li) {
-                        addStatement("+it.name")
+    val elemCode = CodeBlock.builder().run {
+        elem.props.forEach{
+            addStatement("val ${it.key}Ref = %M<%M>()", React.useRef, Browser.INPUT)
+        }
+        block("%M", React.details){
+            block("%M", React.summary){
+                addStatement("+\"Add or Edit\"")
+            }
+            elem.props.forEach{
+                block("%M", React.div) {
+                    addStatement("+\"${it.key}\"")
+                    block("%M", React.input) {
+                        addStatement("ref = ${it.key}Ref")
                     }
                 }
             }
         }
         build()
     }
-    val tableComp = PropertySpec
-        .builder(elem.tableComp, tableCompType)
-        .initializer(tableCompCode)
+
+    val compType = React.FC.parameterizedBy(ClassName(packageName, "${elem.comp}Props"))
+    val compCode = CodeBlock.builder().run {
+        block("%T", compType) {
+            add(elemCode)
+            block("%M", React.ul) {
+                block("it.elems.map") {
+                    block("%M", React.li) {
+                        addStatement("+it.${elem.props.keys.first()}")
+                    }
+                }
+            }
+        }
+        build()
+    }
+    val comp = PropertySpec
+        .builder(elem.comp, compType)
+        .initializer(compCode)
         .build()
 
 
 
     return FileSpec.builder(packageName, elem.comp).run {
-        addType(tableCompProps)
+        addType(compProps)
         addProperty(queryComp)
-        addProperty(tableComp)
+        addProperty(comp)
         build()
     }
 }

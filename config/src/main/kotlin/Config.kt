@@ -31,8 +31,8 @@ val config = ElemAppConfig(
         ElemDescription(
             "ElemTwo",
             mapOf(
-                "name" to PropsType.STRING,
-                "age" to PropsType.INT
+                "key" to PropsType.STRING,
+                "value" to PropsType.INT
             ),
             listOf(
                 RowDescription(
